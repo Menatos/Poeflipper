@@ -1,24 +1,25 @@
 import requests
-from enum import Enum
+import json
 
-class type(Enum):
-    Currency = "currencyoverview"
-    Fragment = "currencyoverview"
-    Oil = "itemoverview"
-    Incubator = "itemoverview"
-    Scarab = "itemoverview"
-    Fossil = "itemoverview"
-    Resonator = "itemoverview"
-    Essence = "itemoverview"
-    DivinationCard = "itemoverview"
-    SkillGem = "itemoverview"
-    BaseType = "itemoverview"
-    UniqueMap = "itemoverview"
-    UniqueJewel = "itemoverview"
-    UniqueFlask = "itemoverview"
-    UniqueWeapon = "itemoverview"
-    UniqueArmour = "itemoverview"
-    UniqueAccessory = "itemoverview"
+types = {
+    "Currency": "currencyoverview",
+    "Fragment": "currencyoverview",
+    "Oil": "itemoverview",
+    "Incubator": "itemoverview",
+    "Scarab": "itemoverview",
+    "Fossil": "itemoverview",
+    "Resonator": "itemoverview",
+    "Essence": "itemoverview",
+    "DivinationCard": "itemoverview",
+    "SkillGem": "itemoverview",
+    "BaseType": "itemoverview",
+    "UniqueMap": "itemoverview",
+    "UniqueJewel": "itemoverview",
+    "UniqueFlask": "itemoverview",
+    "UniqueWeapon": "itemoverview",
+    "UniqueArmour": "itemoverview",
+    "UniqueAccessory": "itemoverview"
+}
 
 def send_request(overview ,league, type, ):
 
@@ -40,11 +41,19 @@ def send_request(overview ,league, type, ):
         print(f"Request failed: {e}")
 
 # Send the request and save the response in a variable
-response_data = send_request(type.DivinationCard.value, 'Ancestor', type.DivinationCard.name)
+rawDivinationData = (json.loads(send_request(types['DivinationCard'], 'Ancestor', 'DivinationCard')))['lines']
+rawCurrencyData = json.loads(send_request(types['Currency'], 'Ancestor', 'Currency'))
 
-# Check if the response data is available
-if response_data:
-    print("API Response:")
-    print(response_data)
-else:
-    print("No response data available.")
+def filter_objects_with_currencyitem(objects):
+    filtered_objects = []
+
+    for obj in objects:
+        if "explicitModifiers" in obj:
+            for explicitModifier in obj['explicitModifiers']:
+                if '<currencyitem>' in explicitModifier['text']:
+                    filtered_objects.append(obj)
+
+    return filtered_objects
+
+filteredDivinationCards = filter_objects_with_currencyitem(rawDivinationData)
+print(filteredDivinationCards)

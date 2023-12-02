@@ -1,10 +1,13 @@
+import os
+
 import requests
 import json
 import re
+import pprint
 
 currentLeague = 'Ancestor'
 
-types = {
+itemTypes = {
     "Currency": "currencyoverview",
     "Fragment": "currencyoverview",
     "Oil": "itemoverview",
@@ -24,7 +27,7 @@ types = {
     "UniqueAccessory": "itemoverview"
 }
 
-itemTypes = [
+divinationTypes = [
     'currencyitem',
     'uniqueitem',
     'gemitem',
@@ -53,8 +56,8 @@ def send_request(overview ,league, type):
         print(f"Request failed: {e}")
 
 # Send the request and save the response in a variable
-rawDivinationData = (json.loads(send_request(types['DivinationCard'], currentLeague, 'DivinationCard')))['lines']
-rawCurrencyData = (json.loads(send_request(types['Currency'], currentLeague, 'Currency')))['lines']
+rawDivinationData = (json.loads(send_request(itemTypes['DivinationCard'], currentLeague, 'DivinationCard')))['lines']
+rawCurrencyData = (json.loads(send_request(itemTypes['Currency'], currentLeague, 'Currency')))['lines']
 
 def filter_divination_cards(cardsObject, rewardType):
     filtered_cards = []
@@ -67,7 +70,7 @@ def filter_divination_cards(cardsObject, rewardType):
 
     return filtered_cards
 
-filteredDivinationCards = filter_divination_cards(rawDivinationData, itemTypes[0])
+filteredDivinationCards = filter_divination_cards(rawDivinationData, divinationTypes[0])
 print(filteredDivinationCards)
 
 def compare_div_prices(filteredCards):
@@ -99,3 +102,44 @@ def compare_div_prices(filteredCards):
     return price_comparison
 
 print(compare_div_prices(filteredDivinationCards))
+
+def sendRequestsAndSaveToFile():
+    for itemType in itemTypes.items():
+        result = send_request(itemType[1], currentLeague, itemType[0])
+        folder_name = 'api_responses'
+        file_path = os.path.join(folder_name, (itemType[0] + '.json'))
+
+        if result:
+            if not os.path.exists(folder_name):
+                os.makedirs(folder_name)
+            with open(file_path, "w") as file:
+                file.write(result)
+        else:
+            print(f"Request for {itemType} failed.")
+
+def convertResponsesToObjects():
+    for itemType in itemTypes.items():
+        folder_name = 'api_responses'
+        file_path = os.path.join(folder_name, (itemType[0] + '.json'))
+
+        result_object = {}
+
+        with open(file_path, 'r') as file:
+            file_content = json.load(file.read())['lines']
+
+            for obj in file_content:
+                key = obj["name"]
+                result_object[key] = obj
+
+
+
+# sendRequestsAndSaveToFile()
+
+# def test():
+#     json_data = None
+#     with open('api_responses/Oil.json', 'r') as f:
+#         data = f.read()
+#         json_data = json.loads(data)
+#
+#     # print json to screen with human-friendly formatting
+#     pprint.pprint(json_data, compact=True)

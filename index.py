@@ -7,6 +7,9 @@ import pprint
 
 currentLeague = 'Ancestor'
 
+folder_name_json = 'api_responses'
+folder_name_objects = 'api_objects'
+
 itemTypes = {
     "Currency": "currencyoverview",
     "Fragment": "currencyoverview",
@@ -71,7 +74,7 @@ def filter_divination_cards(cardsObject, rewardType):
     return filtered_cards
 
 filteredDivinationCards = filter_divination_cards(rawDivinationData, divinationTypes[0])
-print(filteredDivinationCards)
+# print(filteredDivinationCards)
 
 def compare_div_prices(filteredCards):
     price_comparison = []
@@ -99,9 +102,26 @@ def compare_div_prices(filteredCards):
                     print("No match found")
         price_comparison.append(card_data)
 
+        with open(folder_name_objects + '/Currency.json', 'r') as file:
+            currency = json.loads(file.read())
+
+        try:
+            card_data['currencyValue'] = currency[card_data['name']]['chaosEquivalent']
+
+            value_cards = (card_data['chaosValue'] * card_data['stackSize'])
+            value_currency = int(card_data['currencyValue']) * int(card_data['amount'])
+            diff = value_currency - value_cards
+
+            if diff > 0:
+                print("Name of Card: " + card_data['cardName'], diff, "Name of reward: " + card_data['amount'] + "x ", card_data['name'])
+
+        except:
+            print('')
+
+
     return price_comparison
 
-print(compare_div_prices(filteredDivinationCards))
+
 
 def sendRequestsAndSaveToFile():
     for itemType in itemTypes.items():
@@ -119,21 +139,27 @@ def sendRequestsAndSaveToFile():
 
 def convertResponsesToObjects():
     for itemType in itemTypes.items():
-        folder_name = 'api_responses'
-        file_path = os.path.join(folder_name, (itemType[0] + '.json'))
+        file_path_json = os.path.join(folder_name_json, (itemType[0] + '.json'))
+        file_path_objects = os.path.join(folder_name_objects, (itemType[0] + '.json'))
 
         result_object = {}
 
-        with open(file_path, 'r') as file:
-            file_content = json.load(file.read())['lines']
-
+        with open(file_path_json, 'r') as file:
+            file_content = (json.loads(file.read()))['lines']
             for obj in file_content:
-                key = obj["name"]
-                result_object[key] = obj
+
+                try:
+                    key = obj['name']
+                    result_object[key] = obj
+                except:
+                    key = obj['currencyTypeName']
+                    result_object[key] = obj
+
+        with open(file_path_objects, "w") as file:
+            file.write(json.dumps(result_object))
 
 
 
-# sendRequestsAndSaveToFile()
 
 # def test():
 #     json_data = None
@@ -143,3 +169,17 @@ def convertResponsesToObjects():
 #
 #     # print json to screen with human-friendly formatting
 #     pprint.pprint(json_data, compact=True)
+
+compare_div_prices(filteredDivinationCards)
+# convertResponsesToObjects()
+# sendRequestsAndSaveToFile()
+
+
+
+
+# KACKDATEIEN IN DATENBANK
+# FUNKTIONEN ALLLLLLLE ÜBERABEITEN WEIL BULLSHIT
+# GUI
+# WEITERE KATEGORIEN
+# FILTER IM GUI
+# Mitarbeitergespräche

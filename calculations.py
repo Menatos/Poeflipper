@@ -1,16 +1,8 @@
 import re
 import json
 
-import index
-
-
-folder_name_objects = index.folder_name_objects
-
-# Divination Cards
-# This method compares the price of a set of Divination cards compared to the value of the rewarded item.
 def compare_div_prices(filteredCards):
     price_comparison = []
-    pattern = r'(<currencyitem>|<uniqueitem>|<gemitem>|<rareitem>|<magicitem>|<whiteitem>)+{(?:(\d+)x\s*)?([^}]+)}'
 
     for card in filteredCards:
         card_data = {}

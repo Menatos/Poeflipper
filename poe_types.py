@@ -16,7 +16,7 @@ itemTypes = {
     "Memory": "itemoverview",
 }
 
-divinationTypes = [
+rewardTypes = [
     'currencyitem',
     'uniqueitem',
     'gemitem',

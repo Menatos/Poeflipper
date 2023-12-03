@@ -5,9 +5,7 @@ currentLeague = 'Ancestor'
 
 GREEN = "\033[92m"
 RESET = "\033[0m"
-
-folder_name_json = 'api_responses'
-folder_name_objects = 'api_objects'
+BLUE = "\033[94m"
 
 itemTypes = poe_types.itemTypes
 reward_Types = poe_types.rewardTypes

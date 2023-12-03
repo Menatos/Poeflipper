@@ -1,50 +1,45 @@
-import re
-import json
+import sqlite3
+from pprint import pprint
 
-def compare_div_prices(filteredCards):
-    price_comparison = []
+from pypika import Query, Table, Field
 
-    for card in filteredCards:
-        card_data = {}
+import index
 
-        card_data['chaosValue'] = card['chaosValue']
-        card_data['cardName'] = card['name']
-
-        try:
-            card_data['stackSize'] = card['stackSize']
-        except:
-            card_data['stackSize'] = 1
-
-        if "explicitModifiers" in card:
-            for explicitModifier in card['explicitModifiers']:
-                match = re.search(pattern, explicitModifier['text'])
-
-                if match:
-                    card_data['amount'] = match.group(2)
-                    card_data['name'] = match.group(3)
-                else:
-                    print("No match found")
-        price_comparison.append(card_data)
-
-        with open(folder_name_objects + '/Currency.json', 'r') as file:
-            currency = json.loads(file.read())
-
-        try:
-            # if card_data['name'] == 'Regrading Lens' or card_data['name'] == 'Simulacrum' or  card_data['name'] == "Elderslayer's Exalted Orb" or card_data['name'] == "Incursion Vial" or card_data['name'] == "Winged Scarab" or card_data['name'] == "Delirium Orb":
-            #     continue
-            card_data['currencyValue'] = currency[card_data['name']]['chaosEquivalent']
-
-            value_cards = (card_data['chaosValue'] * card_data['stackSize'])
-            value_currency = int(card_data['currencyValue']) * int(card_data['amount'])
-            diff = value_currency - value_cards
-
-            if diff > 0:
-                print('')
-                # print("Name of Card: " + card_data['cardName'], diff, "Name of reward: " + card_data['amount'] + "x ", card_data['name'])
-
-        except:
-            print('')
-            # print('Error in ' + card_data['cardName'])
+con = sqlite3.connect("poeflipper.db")
+db = con.cursor()
 
 
-    return price_comparison
+# This method serves as a calculation method to determine the value between the cost of the Divination cards needed
+# and the cost of the reward
+def calculate_divination_card_difference(minProfit = 10):
+    DivinationCard = Table('DivinationCard')
+    Currency = Table('Currency')
+    Uniques = Table('Uniques')
+    Fragment = Table('Fragment')
+
+    q = (Query
+         .from_(DivinationCard)
+         .join(Currency)
+         .on(DivinationCard.reward == Currency.name)
+         .select('name', 'chaosValue', 'stackSize', 'rewardAmount', Currency.name, Currency.chaosEquivalent)
+         )
+    div_cards = db.execute(str(q)).fetchall()
+
+    for cards in div_cards:
+        profit = round((cards[3] * cards[5] - cards[1] * cards[2]), 2)
+        if (cards[1] * cards[2]) < (cards[3] * cards[5]) and profit >= minProfit:
+            print('Name of card: ', cards[0], 'Cost of cards: ', int(cards[1]) * float(cards[2]), ' Name of reward: ', cards[4], ' Cost of reward: ', int(cards[5]), ' Amount: ', int(cards[3]))
+            print(f"{index.GREEN}Profit: ", profit, f"{index.RESET}")
+
+
+    # q = (Query
+    #      .from_(DivinationCard)
+    #      .join(Uniques)
+    #      .on(DivinationCard.reward == Uniques.name)
+    #      .select('*')
+    #      )
+    # div_cards = db.execute(str(q)).fetchall()
+
+
+
+calculate_divination_card_difference()

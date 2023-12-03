@@ -3,6 +3,9 @@ import poe_types
 
 currentLeague = 'Ancestor'
 
+GREEN = "\033[92m"
+RESET = "\033[0m"
+
 folder_name_json = 'api_responses'
 folder_name_objects = 'api_objects'
 

@@ -14,22 +14,30 @@ itemTypes = poe_types.itemTypes
 reward_types = poe_types.rewardTypes
 uniqueTypes = poe_types.uniqueTypes
 
+
 def create_db_tables():
-    db.execute("CREATE TABLE IF NOT EXISTS BaseType(id INTEGER, name, icon, levelRequired INTEGER, baseType, itemClass, chaosValue NUMERIC, listingCount, variant)")
-    db.execute("CREATE TABLE IF NOT EXISTS Currency(currencyTypeName, icon, chaosEquivalent NUMERIC)")
-    db.execute("CREATE TABLE IF NOT EXISTS DivinationCard(id INTEGER, name, icon, stackSize INTEGER, reward, rewardAmount INTEGER, rewardType, chaosValue NUMERIC, count INTEGER, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Essence(id INTEGER, name, icon, mapTier INTEGER, chaosValue NUMERIC, listingCount INTEGER)")
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS BaseType(id INTEGER, name, icon, levelRequired INTEGER, baseType, itemClass, chaosValue NUMERIC, listingCount, variant)")
+    db.execute("CREATE TABLE IF NOT EXISTS Currency(name, icon, chaosEquivalent NUMERIC)")
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS DivinationCard(id INTEGER, name, icon, stackSize INTEGER, reward, rewardAmount INTEGER, rewardType, chaosValue NUMERIC, count INTEGER, listingCount INTEGER)")
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS Essence(id INTEGER, name, icon, mapTier INTEGER, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute("CREATE TABLE IF NOT EXISTS Fossil(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Fragment(currencyTypeName, icon, chaosEquivalent NUMERIC)")
+    db.execute("CREATE TABLE IF NOT EXISTS Fragment(name, icon, chaosEquivalent NUMERIC)")
     db.execute("CREATE TABLE IF NOT EXISTS Incubator(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute("CREATE TABLE IF NOT EXISTS Oil(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute("CREATE TABLE IF NOT EXISTS Resonator(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute("CREATE TABLE IF NOT EXISTS Scarab(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS SkillGem(id INTEGER, name, icon, gemLevel INTEGER, corrupted INTEGER, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Uniques(id INTEGER, name, icon, levelRequired INTEGER, baseType, itemClass, itemType, chaosValue NUMERIC, listingCount INTEGER)")
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS SkillGem(id INTEGER, name, icon, gemLevel INTEGER, corrupted INTEGER, chaosValue NUMERIC, listingCount INTEGER)")
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS Uniques(id INTEGER, name, icon, levelRequired INTEGER, baseType, itemClass, itemType, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute("CREATE TABLE IF NOT EXISTS Artifact(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS DeliriumOrb(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Invitation(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS DeliriumOrb(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
+    db.execute(
+        "CREATE TABLE IF NOT EXISTS Invitation(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute("CREATE TABLE IF NOT EXISTS Memory(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
 
     db.execute("CREATE TABLE IF NOT EXISTS ItemList(id INTEGER, name TEXT, table_name TEXT)")
@@ -46,7 +54,8 @@ def create_db_tables():
     #
     # print(res.fetchall())
 
-def map_values(obj, type = ''):
+
+def map_values(obj, type=''):
     values = {}
 
     if 'id' in obj:
@@ -54,7 +63,7 @@ def map_values(obj, type = ''):
     if 'name' in obj:
         values['name'] = obj['name']
     if 'currencyTypeName' in obj:
-        values['currencyTypeName'] = obj['currencyTypeName']
+        values['name'] = obj['currencyTypeName']
     if 'icon' in obj:
         values['icon'] = obj['icon']
     else:
@@ -98,28 +107,26 @@ def map_values(obj, type = ''):
     else:
         values['variant'] = ''
 
-    values['reward'] = ''
-    values['rewardAmount'] = 0
-    values['rewardType'] = ''
-
-
     if type == 'DivinationCard':
         # Divination Card reward regex
-        pattern = r'<(currencyitem|uniqueitem|gemitem|rareitem|magicitem|whiteitem)+>{(?:(\d+)x\s*)?([^}]+)}'
+        pattern = r'<(currencyitem|uniqueitem|gemitem|rareitem|magicitem|whiteitem|divination)+>\s*{(?:(\d+)x\s*)?([^}]+)}'
 
-        for explicitModifier in obj:
+        for explicitModifier in obj['explicitModifiers']:
             match = re.search(pattern, explicitModifier['text'])
 
-        values['rewardType'] = match.group(1)
-
-        values['rewardAmount'] = match.group(2)
-        values['reward'] = match.group(3)
-
+            if match:
+                values['rewardType'] = match.group(1)
+                values['rewardAmount'] = match.group(2) or 1
+                values['reward'] = match.group(3)
+            else:
+                values['rewardType'] = ''
+                values['rewardAmount'] = '1'
+                values['reward'] = ''
 
     return values
 
-def refresh_db_values():
 
+def refresh_db_values():
     db.execute(f'DELETE FROM {ItemList}')
     itemListTable = Table(ItemList)
 
@@ -167,21 +174,21 @@ def refresh_db_values():
         value = map_values(obj)
 
         q = Query.into(BaseType).insert(
-            value['currencyTypeName'],
+            value['name'],
             value['icon'],
             value['chaosValue'],
         )
 
         q_index = Query.into(itemListTable).insert(
             '',
-            value['currencyTypeName'],
+            value['name'],
             tableName
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['currencyTypeName']} import complete")
+        print(f"{tableName} Itemname: {value['name']} import complete")
 
     # DIVINATIONCARD TABLE --------------------------------------------------
     tableName = 'DivinationCard'
@@ -191,7 +198,7 @@ def refresh_db_values():
     db.execute(f'DELETE FROM {tableName}')
 
     for obj in response:
-        value = map_values(obj)
+        value = map_values(obj, 'DivinationCard')
 
         q = Query.into(BaseType).insert(
             value['id'],
@@ -287,21 +294,21 @@ def refresh_db_values():
         value = map_values(obj)
 
         q = Query.into(BaseType).insert(
-            value['currencyTypeName'],
+            value['name'],
             value['icon'],
             value['chaosValue'],
         )
 
         q_index = Query.into(itemListTable).insert(
             '',
-            value['currencyTypeName'],
+            value['name'],
             tableName
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['currencyTypeName']} import complete")
+        print(f"{tableName} Itemname: {value['name']} import complete")
 
     # INCUBATOR TABLE --------------------------------------------------
     tableName = 'Incubator'
@@ -581,7 +588,6 @@ def refresh_db_values():
             value['listingCount']
         )
 
-
         q_index = Query.into(itemListTable).insert(
             value['id'],
             value['name'],
@@ -593,5 +599,7 @@ def refresh_db_values():
         con.commit()
         print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
 
+
 create_db_tables()
 refresh_db_values()
+print(f"{index.GREEN}import complete{index.RESET}")

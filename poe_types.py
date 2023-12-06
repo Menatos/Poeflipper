@@ -1,4 +1,7 @@
-itemTypes = {
+# This file is a document for all item types that poe currently offers and which we want to
+# check
+
+item_types = {
     "Currency": "currencyoverview",
     "Fragment": "currencyoverview",
     "Oil": "itemoverview",
@@ -16,7 +19,7 @@ itemTypes = {
     "Memory": "itemoverview",
 }
 
-rewardTypes = [
+reward_types = [
     'currencyitem',
     'uniqueitem',
     'gemitem',
@@ -25,7 +28,7 @@ rewardTypes = [
     'whiteitem'
 ]
 
-uniqueTypes = {
+unique_types = {
     "UniqueMap": "itemoverview",
     "UniqueJewel": "itemoverview",
     "UniqueFlask": "itemoverview",

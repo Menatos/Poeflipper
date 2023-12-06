@@ -1,7 +1,6 @@
 import sqlite3
-from pprint import pprint
 
-from pypika import Query, Table, Field
+from pypika import Query, Table
 
 import index
 

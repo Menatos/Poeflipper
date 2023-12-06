@@ -1,4 +1,5 @@
 requests~=2.31.0
 PyPika~=0.48.9
-discord~=2.3.2
+schedule~=1.2.1
 python-dotenv~=1.0.0
+discord

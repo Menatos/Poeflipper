@@ -1,0 +1,5 @@
+requests~=2.31.0
+PyPika~=0.48.9
+sqlite3
+re
+json

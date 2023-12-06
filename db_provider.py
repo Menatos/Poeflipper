@@ -1,3 +1,6 @@
+# This file takes care of importing all the poe ninja data into a sqlite3 database.
+# Value mapping is also done in this file.
+
 import json
 import re
 import sqlite3

@@ -1,7 +1,8 @@
 import json
-import sqlite3
-from pypika import Query, Table, Field
 import re
+import sqlite3
+
+from pypika import Query, Table
 
 import index
 import poe_types
@@ -43,7 +44,6 @@ def create_db_tables():
     db.execute("CREATE TABLE IF NOT EXISTS ItemList(id INTEGER, name TEXT, table_name TEXT)")
 
     # https://pypika.readthedocs.io/en/latest/2_tutorial.html
-    from pypika import Query, Table, Field
 
     # https://docs.python.org/3/library/sqlite3.html
     # q = Query.from_('movie').select('name', 'year', 'score')
@@ -136,7 +136,7 @@ def refresh_db_values():
 
     # BASETYPE TABLE --------------------------------------------------
     table_name = 'BaseType'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -169,7 +169,7 @@ def refresh_db_values():
 
     # CURRENCY TABLE --------------------------------------------------
     table_name = 'Currency'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -196,7 +196,7 @@ def refresh_db_values():
 
     # DIVINATIONCARD TABLE --------------------------------------------------
     table_name = 'DivinationCard'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -230,7 +230,7 @@ def refresh_db_values():
 
     # ESSENCE TABLE --------------------------------------------------
     table_name = 'Essence'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -260,7 +260,7 @@ def refresh_db_values():
 
     # FOSSIL TABLE --------------------------------------------------
     table_name = 'Fossil'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -289,7 +289,7 @@ def refresh_db_values():
 
     # FRAGMENT TABLE --------------------------------------------------
     table_name = 'Fragment'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -316,7 +316,7 @@ def refresh_db_values():
 
     # INCUBATOR TABLE --------------------------------------------------
     table_name = 'Incubator'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -345,7 +345,7 @@ def refresh_db_values():
 
     # OIL TABLE --------------------------------------------------
     table_name = 'Oil'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -373,7 +373,7 @@ def refresh_db_values():
 
     # RESONATOR TABLE --------------------------------------------------
     table_name = 'Resonator'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -401,7 +401,7 @@ def refresh_db_values():
 
     # SCARAB TABLE --------------------------------------------------
     table_name = 'Scarab'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -429,7 +429,7 @@ def refresh_db_values():
 
     # SKILLGEM TABLE --------------------------------------------------
     table_name = 'SkillGem'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -465,7 +465,7 @@ def refresh_db_values():
 
     for uniqueType in unique_types.items():
 
-        response = (json.loads(index.send_request(uniqueType[1], index.currentLeague, uniqueType[0])))['lines']
+        response = (json.loads(index.send_request(uniqueType[1], index.current_league, uniqueType[0])))['lines']
 
         for obj in response:
             value = map_values(obj)
@@ -494,7 +494,7 @@ def refresh_db_values():
 
     # ARTIFACT TABLE --------------------------------------------------
     table_name = 'Artifact'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -522,7 +522,7 @@ def refresh_db_values():
 
     # DELIRIUM_ORB TABLE --------------------------------------------------
     table_name = 'DeliriumOrb'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -550,7 +550,7 @@ def refresh_db_values():
 
     # INVITATION TABLE --------------------------------------------------
     table_name = 'Invitation'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')
@@ -578,7 +578,7 @@ def refresh_db_values():
 
     # MEMORY TABLE --------------------------------------------------
     table_name = 'Memory'
-    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
+    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
 
     base_type = Table(table_name)
     db.execute(f'DELETE FROM {table_name}')

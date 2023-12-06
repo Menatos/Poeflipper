@@ -1,3 +1,6 @@
+# This file is a document for all item types that poe currently offers and which we want to
+# check
+
 item_types = {
     "Currency": "currencyoverview",
     "Fragment": "currencyoverview",

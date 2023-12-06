@@ -2,6 +2,7 @@
 # site and retrieve the answer.
 
 import requests
+
 import poe_types
 
 current_league = 'Standard'
@@ -28,8 +29,11 @@ def send_request(overview, league, type):
     except requests.RequestException as e:
         print(f"Request failed: {e}")
 
-# GUI
 # WEITERE KATEGORIEN
-# FILTER IM GUI
 # UNIQUE Karten Fixen bei calculate divs
 # DISCORD Functions statt messages
+# GEMLEVEL divcards
+# Omens
+# Refactor db import
+
+# Inscribed ultimatums

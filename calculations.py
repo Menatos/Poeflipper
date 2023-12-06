@@ -1,6 +1,6 @@
 import sqlite3
 
-from pypika import Query, Table, Field
+from pypika import Query, Table
 
 import poe_types
 
@@ -12,11 +12,11 @@ db = con.cursor()
 # This method serves as a calculation method to determine the value between the cost of the Divination cards needed
 # and the cost of the reward
 
-def evaluate_costs(cards, priceOffSet, minProfit, maxProfit):
-    profit = round((cards[3] * cards[5] - (cards[1] * priceOffSet) * cards[2]), 2)
-    if (cards[1] * cards[2]) < (cards[3] * cards[5]) and profit >= minProfit and profit <= maxProfit:
+def evaluate_costs(cards, price_offset, min_profit, max_profit):
+    profit = round((cards[3] * cards[5] - (cards[1] * price_offset) * cards[2]), 2)
+    if (cards[1] * cards[2]) < (cards[3] * cards[5]) and profit >= min_profit and profit <= max_profit:
         profitable_card = ('Name of card:', cards[0], 'Cost of cards:', int(cards[1]) * float(cards[2]), 'Name of reward:', cards[4],
-              'Amount:', int(cards[3]), 'Cost of reward:', int(cards[5]))
+        'Amount:', int(cards[3]), 'Cost of reward:', int(cards[5]))
         profit_from_card = (f"{poe_types.GREEN}Profit:", profit, f"{poe_types.RESET}")
         print(profitable_card)
         print(profit_from_card)
@@ -24,67 +24,71 @@ def evaluate_costs(cards, priceOffSet, minProfit, maxProfit):
         return (f"{cards[0]} >> {int(cards[3])} {cards[4]} >> {profit}c")
 
 
-def sql_query(mainTable, subTable, rewardCost, low_confidence=False, skillGem=False):
+def sql_query(main_table, sub_table, reward_cost, low_confidence=False, skill_gem=False):
     q = (Query
-         .from_(mainTable)
-         .join(subTable)
-         .on(mainTable.reward == subTable.name)
-         .select('name', 'chaosValue', 'stackSize', 'rewardAmount', subTable.name, getattr(subTable, rewardCost))
+         .from_(main_table)
+         .join(sub_table)
+         .on(main_table.reward == sub_table.name)
+         .select('name', 'chaosValue', 'stackSize', 'rewardAmount', sub_table.name, getattr(sub_table, reward_cost))
          )
     if low_confidence:
         q = (Query
-             .from_(mainTable)
-             .join(subTable)
-             .on(mainTable.reward == subTable.name)
-             .select('name', 'chaosValue', 'stackSize', 'rewardAmount', subTable.name, getattr(subTable, rewardCost))
-             .where(mainTable.listingCount > 30 and subTable.listingCount > 30)
+             .from_(main_table)
+             .join(sub_table)
+             .on(main_table.reward == sub_table.name)
+             .select('name', 'chaosValue', 'stackSize', 'rewardAmount', sub_table.name, getattr(sub_table, reward_cost))
+             .where(main_table.listingCount > 30 and sub_table.listingCount > 30)
              )
-    if skillGem:
+    if skill_gem:
         q = (Query
-             .from_(mainTable)
-             .join(subTable)
-             .on(mainTable.reward == subTable.name)
-             .select('name', 'chaosValue', 'stackSize', 'rewardAmount', subTable.name, getattr(subTable, rewardCost))
-             .where(mainTable.listingCount > 30 and subTable.listingCount > 30)
-             .where(subTable.gemLevel)
+             .from_(main_table)
+             .join(sub_table)
+             .on(main_table.reward == sub_table.name)
+             .select('name', 'chaosValue', 'stackSize', 'rewardAmount', sub_table.name, getattr(sub_table, reward_cost))
+             .where(main_table.listingCount > 30 and sub_table.listingCount > 30)
+             .where(sub_table.gemLevel)
              )
 
     cards = db.execute(str(q)).fetchall()
     return cards
 
-async def calculate_divination_card_difference(minProfit = 10, maxProfit = 5000, priceOffSet=1.0 , currency=False, unique=False, fragment=False, skillGem=False):
-    DivinationCard = Table('DivinationCard')
-    Currency = Table('Currency')
-    Uniques = Table('Uniques')
-    Fragment = Table('Fragment')
-    SkillGem = Table('SkillGem')
+
+def calculate_divination_card_difference(min_profit=10, max_profit=5000, price_off_set=1.0, currency=True, unique=True,
+                                         fragment=True, skill_gem=False):
+    divination_card_table = Table('DivinationCard')
+    currency_table = Table('Currency')
+    uniques_table = Table('Uniques')
+    fragment_table = Table('Fragment')
+    skill_gem_table = Table('SkillGem')
 
     results = []
 
-# CURRENCY ------------------------------------------------------------------
+    # Currency ---------------------------------------------------------------------
     print(f'{poe_types.BLUE}CURRENCY ---------------------------------------------------------{poe_types.RESET}')
     if currency:
-        currency_cards = sql_query(DivinationCard, Currency, 'chaosEquivalent')
+        currency_cards = sql_query(divination_card_table, currency_table, 'chaosEquivalent')
         for cards in currency_cards:
-            result = evaluate_costs(cards, priceOffSet, minProfit, maxProfit)
+            result = evaluate_costs(cards, price_off_set, min_profit, max_profit)
             if result:
                 results.append(result)
 
-# UNIQUES ---------------------------------------------------------------------
+    # UNIQUES ---------------------------------------------------------------------
     print(f'{poe_types.BLUE}UNIQUES ----------------------------------------------------------{poe_types.RESET}')
     if unique:
-        unique_cards = sql_query(DivinationCard, Uniques, 'chaosValue', True)
+        unique_cards = sql_query(divination_card_table, uniques_table, 'chaosValue', True)
         for cards in unique_cards:
-            result = evaluate_costs(cards, priceOffSet, minProfit, maxProfit)
+            result = evaluate_costs(cards, price_off_set, min_profit, max_profit)
             if result:
                 results.append(result)
 
-# FRAGMENT ---------------------------------------------------------------------
+    # FRAGMENT ---------------------------------------------------------------------
     print(f'{poe_types.BLUE}FRAGMENT ---------------------------------------------------------{poe_types.RESET}')
     if fragment:
-        fragment_cards = sql_query(DivinationCard, Fragment, 'chaosEquivalent')
+        fragment_cards = sql_query(divination_card_table, fragment_table, 'chaosEquivalent')
         for cards in fragment_cards:
-            result = evaluate_costs(cards, priceOffSet, minProfit, maxProfit)
+            evaluate_costs(cards, price_off_set, min_profit, max_profit)
+
+            result = evaluate_costs(cards, price_off_set, min_profit, max_profit)
             if result:
                 results.append(result)
 

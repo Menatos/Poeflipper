@@ -164,3 +164,4 @@ cython_debug/
 /api_responses/
 poeflipper.db
 ./poeflipper.db
+/env

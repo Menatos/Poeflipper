@@ -1,12 +1,14 @@
+# This is the backbone of the application. this class is used to send api requests to the poe.ninja
+# site and retrieve the answer.
+
 import requests
 import poe_types
 
 currentLeague = 'Standard'
 
-itemTypes = poe_types.itemTypes
-reward_Types = poe_types.rewardTypes
-uniqueTypes = poe_types.uniqueTypes
-
+item_types = poe_types.item_types
+reward_Types = poe_types.reward_types
+unique_types = poe_types.unique_types
 
 def send_request(overview, league, type):
     api_url = f"https://poe.ninja/api/data/{overview}?league={league}&type={type}"

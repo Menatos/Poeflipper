@@ -53,8 +53,7 @@ def sql_query(main_table, sub_table, reward_cost, low_confidence=False, skill_ge
     return cards
 
 
-def calculate_divination_card_difference(min_profit=10, max_profit=5000, price_off_set=1.0, currency=True, unique=True,
-                                         fragment=True, skill_gem=False):
+async def calculate_divination_card_difference(min_profit=10, max_profit=5000, price_off_set=1.0, currency=False, unique=False,fragment=True, skill_gem=False):
     divination_card_table = Table('DivinationCard')
     currency_table = Table('Currency')
     uniques_table = Table('Uniques')

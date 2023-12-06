@@ -1,18 +1,14 @@
 import requests
 import poe_types
 
-currentLeague = 'Ancestor'
-
-GREEN = "\033[92m"
-RESET = "\033[0m"
-BLUE = "\033[94m"
+currentLeague = 'Standard'
 
 itemTypes = poe_types.itemTypes
 reward_Types = poe_types.rewardTypes
 uniqueTypes = poe_types.uniqueTypes
 
-def send_request(overview ,league, type):
 
+def send_request(overview, league, type):
     api_url = f"https://poe.ninja/api/data/{overview}?league={league}&type={type}"
 
     try:
@@ -30,8 +26,8 @@ def send_request(overview ,league, type):
     except requests.RequestException as e:
         print(f"Request failed: {e}")
 
-# FUNKTIONEN ALLLLLLLE ÜBERABEITEN WEIL BULLSHIT
 # GUI
 # WEITERE KATEGORIEN
 # FILTER IM GUI
-# Mitarbeitergespräche
+# UNIQUE Karten Fixen bei calculate divs
+# DISCORD Functions statt messages

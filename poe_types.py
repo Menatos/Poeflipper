@@ -1,3 +1,7 @@
+GREEN = "\033[92m"
+RESET = "\033[0m"
+BLUE = "\033[94m"
+
 itemTypes = {
     "Currency": "currencyoverview",
     "Fragment": "currencyoverview",

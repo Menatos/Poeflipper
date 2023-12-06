@@ -605,6 +605,5 @@ def refresh_db_values():
         print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
 
 
-create_db_tables()
-refresh_db_values()
-print(f"{index.GREEN}import complete{index.RESET}")
+create_db_tables
+refresh_db_values

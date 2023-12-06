@@ -13,7 +13,7 @@ db = con.cursor()
 
 def evaluate_costs(cards, price_offset, min_profit, max_profit):
     profit = round((cards[3] * cards[5] - (cards[1] * price_offset) * cards[2]), 2)
-    if (cards[3] * cards[5]) > (cards[1] * cards[2]) <= profit <= max_profit:
+    if (cards[1] * cards[2]) < (cards[3] * cards[5]) and profit >= min_profit and profit <= max_profit:
         print('Name of card:', cards[0], 'Cost of cards:', int(cards[1]) * float(cards[2]), 'Name of reward:', cards[4],
               'Amount:', int(cards[3]), 'Cost of reward:', int(cards[5]))
         print(f"{index.GREEN}Profit:", profit, f"{index.RESET}")
@@ -50,30 +50,30 @@ def sql_query(main_table, sub_table, reward_cost, low_confidence=False, skill_ge
 
 def calculate_divination_card_difference(min_profit=10, max_profit=5000, price_off_set=1.0, currency=True, unique=True,
                                          fragment=True, skill_gem=False):
-    divination_card = Table('DivinationCard')
-    currency = Table('Currency')
-    uniques = Table('Uniques')
-    fragment = Table('Fragment')
-    skill_gem = Table('SkillGem')
+    divination_card_table = Table('DivinationCard')
+    currency_table = Table('Currency')
+    uniques_table = Table('Uniques')
+    fragment_table = Table('Fragment')
+    skill_gem_table = Table('SkillGem')
 
     # CURRENCY ------------------------------------------------------------------
     print(f'{index.BLUE}CURRENCY ---------------------------------------------------------{index.RESET}')
     if currency:
-        currency_cards = sql_query(divination_card, currency, 'chaosEquivalent')
+        currency_cards = sql_query(divination_card_table, currency_table, 'chaosEquivalent')
         for cards in currency_cards:
             evaluate_costs(cards, price_off_set, min_profit, max_profit)
 
     # UNIQUES ---------------------------------------------------------------------
     print(f'{index.BLUE}UNIQUES ----------------------------------------------------------{index.RESET}')
     if unique:
-        unique_cards = sql_query(divination_card, uniques, 'chaosValue', True)
+        unique_cards = sql_query(divination_card_table, uniques_table, 'chaosValue', True)
         for cards in unique_cards:
             evaluate_costs(cards, price_off_set, min_profit, max_profit)
 
     # FRAGMENT ---------------------------------------------------------------------
     print(f'{index.BLUE}FRAGMENT ---------------------------------------------------------{index.RESET}')
     if fragment:
-        fragment_cards = sql_query(divination_card, fragment, 'chaosEquivalent')
+        fragment_cards = sql_query(divination_card_table, fragment_table, 'chaosEquivalent')
         for cards in fragment_cards:
             evaluate_costs(cards, price_off_set, min_profit, max_profit)
 

@@ -7,9 +7,9 @@ GREEN = "\033[92m"
 RESET = "\033[0m"
 BLUE = "\033[94m"
 
-itemTypes = poe_types.itemTypes
-reward_Types = poe_types.rewardTypes
-uniqueTypes = poe_types.uniqueTypes
+item_types = poe_types.item_types
+reward_Types = poe_types.reward_types
+unique_types = poe_types.unique_types
 
 def send_request(overview ,league, type):
 

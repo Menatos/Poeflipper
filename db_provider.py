@@ -10,9 +10,9 @@ con = sqlite3.connect("poeflipper.db")
 db = con.cursor()
 ItemList = 'ItemList'
 
-itemTypes = poe_types.itemTypes
-reward_types = poe_types.rewardTypes
-uniqueTypes = poe_types.uniqueTypes
+item_types = poe_types.item_types
+reward_types = poe_types.reward_types
+unique_types = poe_types.unique_types
 
 
 def create_db_tables():
@@ -132,19 +132,19 @@ def map_values(obj, type=''):
 
 def refresh_db_values():
     db.execute(f'DELETE FROM {ItemList}')
-    itemListTable = Table(ItemList)
+    item_list_table = Table(ItemList)
 
     # BASETYPE TABLE --------------------------------------------------
-    tableName = 'BaseType'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'BaseType'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
 
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -156,55 +156,55 @@ def refresh_db_values():
             value['variant'],
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # CURRENCY TABLE --------------------------------------------------
-    tableName = 'Currency'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Currency'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
 
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['name'],
             value['icon'],
             value['chaosValue'],
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             '',
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} import complete")
+        print(f"{table_name} Itemname: {value['name']} import complete")
 
     # DIVINATIONCARD TABLE --------------------------------------------------
-    tableName = 'DivinationCard'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'DivinationCard'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj, 'DivinationCard')
 
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -217,28 +217,28 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # ESSENCE TABLE --------------------------------------------------
-    tableName = 'Essence'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Essence'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
 
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -247,28 +247,28 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # FOSSIL TABLE --------------------------------------------------
-    tableName = 'Fossil'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Fossil'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
 
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -276,54 +276,54 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # FRAGMENT TABLE --------------------------------------------------
-    tableName = 'Fragment'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Fragment'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
 
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['name'],
             value['icon'],
             value['chaosValue'],
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             '',
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} import complete")
+        print(f"{table_name} Itemname: {value['name']} import complete")
 
     # INCUBATOR TABLE --------------------------------------------------
-    tableName = 'Incubator'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Incubator'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -331,28 +331,28 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
 
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # OIL TABLE --------------------------------------------------
-    tableName = 'Oil'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Oil'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -360,27 +360,27 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # RESONATOR TABLE --------------------------------------------------
-    tableName = 'Resonator'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Resonator'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -388,27 +388,27 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # SCARAB TABLE --------------------------------------------------
-    tableName = 'Scarab'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Scarab'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -416,27 +416,27 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # SKILLGEM TABLE --------------------------------------------------
-    tableName = 'SkillGem'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'SkillGem'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -447,29 +447,29 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # UNIQUES TABLE --------------------------------------------------
-    tableName = 'Uniques'
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    table_name = 'Uniques'
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
-    for uniqueType in uniqueTypes.items():
+    for uniqueType in unique_types.items():
 
         response = (json.loads(index.send_request(uniqueType[1], index.currentLeague, uniqueType[0])))['lines']
 
         for obj in response:
             value = map_values(obj)
-            q = Query.into(BaseType).insert(
+            q = Query.into(base_type).insert(
                 value['id'],
                 value['name'],
                 value['icon'],
@@ -481,27 +481,27 @@ def refresh_db_values():
                 value['listingCount']
             )
 
-            q_index = Query.into(itemListTable).insert(
+            q_index = Query.into(item_list_table).insert(
                 value['id'],
                 value['name'],
-                tableName
+                table_name
             )
 
             db.execute(str(q))
             db.execute(str(q_index))
             con.commit()
-            print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+            print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # ARTIFACT TABLE --------------------------------------------------
-    tableName = 'Artifact'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Artifact'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -509,27 +509,27 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # DELIRIUM_ORB TABLE --------------------------------------------------
-    tableName = 'DeliriumOrb'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'DeliriumOrb'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -537,27 +537,27 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # INVITATION TABLE --------------------------------------------------
-    tableName = 'Invitation'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Invitation'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -565,27 +565,27 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
     # MEMORY TABLE --------------------------------------------------
-    tableName = 'Memory'
-    response = (json.loads(index.send_request(itemTypes[tableName], index.currentLeague, tableName)))['lines']
+    table_name = 'Memory'
+    response = (json.loads(index.send_request(item_types[table_name], index.currentLeague, table_name)))['lines']
 
-    BaseType = Table(tableName)
-    db.execute(f'DELETE FROM {tableName}')
+    base_type = Table(table_name)
+    db.execute(f'DELETE FROM {table_name}')
 
     for obj in response:
         value = map_values(obj)
-        q = Query.into(BaseType).insert(
+        q = Query.into(base_type).insert(
             value['id'],
             value['name'],
             value['icon'],
@@ -593,16 +593,16 @@ def refresh_db_values():
             value['listingCount']
         )
 
-        q_index = Query.into(itemListTable).insert(
+        q_index = Query.into(item_list_table).insert(
             value['id'],
             value['name'],
-            tableName
+            table_name
         )
 
         db.execute(str(q))
         db.execute(str(q_index))
         con.commit()
-        print(f"{tableName} Itemname: {value['name']} ID: {value['id']} import complete")
+        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
 
 
 create_db_tables()

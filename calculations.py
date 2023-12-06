@@ -20,13 +20,31 @@ def evaluate_costs(cards, priceOffSet, minProfit, maxProfit):
         print(f"{index.GREEN}Profit:", profit, f"{index.RESET}")
 
 
-def sql_query(mainTable, subTable, rewardCost):
+def sql_query(mainTable, subTable, rewardCost, low_confidence=False, skillGem=False):
     q = (Query
          .from_(mainTable)
          .join(subTable)
          .on(mainTable.reward == subTable.name)
          .select('name', 'chaosValue', 'stackSize', 'rewardAmount', subTable.name, getattr(subTable, rewardCost))
          )
+    if low_confidence:
+        q = (Query
+             .from_(mainTable)
+             .join(subTable)
+             .on(mainTable.reward == subTable.name)
+             .select('name', 'chaosValue', 'stackSize', 'rewardAmount', subTable.name, getattr(subTable, rewardCost))
+             .where(mainTable.listingCount > 30 and subTable.listingCount > 30)
+             )
+    if skillGem:
+        q = (Query
+             .from_(mainTable)
+             .join(subTable)
+             .on(mainTable.reward == subTable.name)
+             .select('name', 'chaosValue', 'stackSize', 'rewardAmount', subTable.name, getattr(subTable, rewardCost))
+             .where(mainTable.listingCount > 30 and subTable.listingCount > 30)
+             .where(subTable.gemLevel)
+             )
+
     cards = db.execute(str(q)).fetchall()
     return cards
 
@@ -47,7 +65,7 @@ def calculate_divination_card_difference(minProfit = 10, maxProfit = 5000, price
 # UNIQUES ---------------------------------------------------------------------
     print(f'{index.BLUE}UNIQUES ----------------------------------------------------------{index.RESET}')
     if unique:
-        unique_cards = sql_query(DivinationCard, Uniques, 'chaosValue')
+        unique_cards = sql_query(DivinationCard, Uniques, 'chaosValue', True)
         for cards in unique_cards:
             evaluate_costs(cards, priceOffSet, minProfit, maxProfit)
 

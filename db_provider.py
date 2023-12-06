@@ -30,7 +30,7 @@ def create_db_tables():
     db.execute("CREATE TABLE IF NOT EXISTS Resonator(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute("CREATE TABLE IF NOT EXISTS Scarab(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute(
-        "CREATE TABLE IF NOT EXISTS SkillGem(id INTEGER, name, icon, gemLevel INTEGER, corrupted INTEGER, chaosValue NUMERIC, listingCount INTEGER)")
+        "CREATE TABLE IF NOT EXISTS SkillGem(id INTEGER, name, icon, gemLevel INTEGER, gemQuality INTEGER, corrupted INTEGER, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute(
         "CREATE TABLE IF NOT EXISTS Uniques(id INTEGER, name, icon, levelRequired INTEGER, baseType, itemClass, itemType, chaosValue NUMERIC, listingCount INTEGER)")
     db.execute("CREATE TABLE IF NOT EXISTS Artifact(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
@@ -98,6 +98,10 @@ def map_values(obj, type=''):
         values['mapTier'] = 1
     if 'gemLevel' in obj:
         values['gemLevel'] = obj['gemLevel']
+    if 'gemQuality' in obj:
+        values['gemQuality'] = obj['gemQuality']
+    else:
+        values['gemQuality'] = 0
     if 'corrupted' in obj:
         values['corrupted'] = 1
     else:
@@ -437,6 +441,7 @@ def refresh_db_values():
             value['name'],
             value['icon'],
             value['gemLevel'],
+            value['gemQuality'],
             value['corrupted'],
             value['chaosValue'],
             value['listingCount']

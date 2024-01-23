@@ -35,5 +35,14 @@ def send_request(overview, league, type):
 # GEMLEVEL divcards
 # Omens
 # Refactor db import
+# Alert bei Preisänderung
+# Autopull der POB-Daten
+# Regex Cluster Jewel
+# Parsen der Pob Daten
+#7 Tage Daten in Db
+#Vergleich aktuelle, letzte League
+#Predictions für 2 Wochen basierend auf letzter league --> + Benachrichtigung bei anstieg
+#https://poe.ninja/api/data/currencyhistory?league=Affliction&type=Currency&currencyId=22
+
 
 # Inscribed ultimatums

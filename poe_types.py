@@ -91,7 +91,7 @@ table_specs = [
         ],
     },
     {
-        'name': 'Fossils',
+        'name': 'Fossil',
         'fields': [
             {'name': 'id', 'type': 'INTEGER'},
             {'name': 'name', 'type': ''},
@@ -101,17 +101,7 @@ table_specs = [
         ],
     },
     {
-        'name': 'Fossils',
-        'fields': [
-            {'name': 'id', 'type': 'INTEGER'},
-            {'name': 'name', 'type': ''},
-            {'name': 'icon', 'type': ''},
-            {'name': 'chaosValue', 'type': 'NUMERIC'},
-            {'name': 'listingCount', 'type': 'INTEGER'},
-        ],
-    },
-    {
-        'name': 'Fragments',
+        'name': 'Fragment',
         'fields': [
             {'name': 'name', 'type': ''},
             {'name': 'icon', 'type': ''},

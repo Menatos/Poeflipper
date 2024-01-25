@@ -6,7 +6,7 @@ import re
 import sqlite3
 
 # https://pypika.readthedocs.io/en/latest/2_tutorial.html
-from pypika import Query, Table, Field
+from pypika import Query, Table
 
 import index
 import poe_types
@@ -22,6 +22,10 @@ reward_types = poe_types.reward_types
 unique_types = poe_types.unique_types
 table_specs = poe_types.table_specs
 
+def is_field_present(table_spec, table_name, field_name):
+    if table_spec['name'] == table_name:
+        return any(field['name'] == field_name for field in table_spec['fields'])
+    return False
 
 def create_db_tables():
 
@@ -46,14 +50,15 @@ def create_db_tables():
 
 def map_values(obj, type=''):
     field_mapping = {
-        'id': 0,
-        'name': obj.get('name', ''),
+        'id': obj.get('id', 0),
+        'name': obj.get('name', obj.get('currencyTypeName', '')),
         'icon': obj.get('icon', ''),
         'levelRequired': obj.get('levelRequired', 0),
         'baseType': obj.get('baseType', ''),
         'itemClass': obj.get('itemClass', ''),
         'itemType': obj.get('itemType', ''),
-        'chaosValue': obj.get('chaosValue', obj.get('chaosEquivalent', 0)),
+        'chaosValue': obj.get('chaosValue', 0),
+        'chaosEquivalent': obj.get('chaosEquivalent', 0),
         'listingCount': obj.get('listingCount', 0),
         'stackSize': obj.get('stackSize', 1),
         'count': obj.get('count', 0),
@@ -80,481 +85,49 @@ def map_values(obj, type=''):
 
     return field_mapping
 
+def insert_into_db(response, table_spec, table_name, current_table, item_list_table):
+    for obj in response:
+        values = map_values(obj)
+
+        values_mapped = []
+
+        # Build the query dynamically based on the table specification
+        for value in values:
+            if is_field_present(table_spec, table_name, value):
+                values_mapped.append(str(values[value]))
+
+        q = Query.into(current_table).insert(values_mapped)
+
+        q_index = Query.into(item_list_table).insert(values['id'], values['name'], table_name)
+
+        # Execute the queries
+        db.execute(str(q))
+        db.execute(str(q_index))
+        con.commit()
+        print(f"{table_name} Itemname: {values['name']} ID: {values['id']} import complete")
 
 def refresh_db_values():
+    # Delete all records from ItemList
     db.execute(f'DELETE FROM {ItemList}')
     item_list_table = Table(ItemList)
 
-    # BASETYPE TABLE --------------------------------------------------
-    table_name = 'BaseType'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
+    # Iterate over table specifications excluding ItemList
+    for table_spec in [t for t in table_specs if t['name'] != 'ItemList']:
+        table_name = table_spec['name']
 
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
+        # Delete all records from the current table
+        current_table = Table(table_name)
+        db.execute(f'DELETE FROM {table_name}')
 
-    for obj in response:
-        value = map_values(obj)
+        if table_name.startswith('Uniques'):
+            for unique_type in unique_types:
+                response = json.loads(index.send_request(unique_types[unique_type], index.current_league, unique_type))['lines']
+                insert_into_db(response, table_spec, table_name, current_table, item_list_table)
+        else:
+            response = json.loads(index.send_request(item_types[table_name], index.current_league, table_name, ))['lines']
 
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['levelRequired'],
-            value['baseType'],
-            value['itemClass'],
-            value['chaosValue'],
-            value['listingCount'],
-            value['variant'],
-        )
+        insert_into_db(response, table_spec, table_name, current_table, item_list_table)
 
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
 
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # CURRENCY TABLE --------------------------------------------------
-    table_name = 'Currency'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-
-        q = Query.into(base_type).insert(
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            '',
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} import complete")
-
-    # DIVINATIONCARD TABLE --------------------------------------------------
-    table_name = 'DivinationCard'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj, 'DivinationCard')
-
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['stackSize'],
-            value['reward'],
-            value['rewardAmount'],
-            value['rewardType'],
-            value['chaosValue'],
-            value['count'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # ESSENCE TABLE --------------------------------------------------
-    table_name = 'Essence'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['mapTier'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # FOSSIL TABLE --------------------------------------------------
-    table_name = 'Fossil'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # FRAGMENT TABLE --------------------------------------------------
-    table_name = 'Fragment'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-
-        q = Query.into(base_type).insert(
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            '',
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} import complete")
-
-    # INCUBATOR TABLE --------------------------------------------------
-    table_name = 'Incubator'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # OIL TABLE --------------------------------------------------
-    table_name = 'Oil'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # RESONATOR TABLE --------------------------------------------------
-    table_name = 'Resonator'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # SCARAB TABLE --------------------------------------------------
-    table_name = 'Scarab'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # SKILLGEM TABLE --------------------------------------------------
-    table_name = 'SkillGem'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['gemLevel'],
-            value['gemQuality'],
-            value['corrupted'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # UNIQUES TABLE --------------------------------------------------
-    table_name = 'Uniques'
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for uniqueType in unique_types.items():
-
-        response = (json.loads(index.send_request(uniqueType[1], index.current_league, uniqueType[0])))['lines']
-
-        for obj in response:
-            value = map_values(obj)
-            q = Query.into(base_type).insert(
-                value['id'],
-                value['name'],
-                value['icon'],
-                value['levelRequired'],
-                value['baseType'],
-                value['itemClass'],
-                value['itemType'],
-                value['chaosValue'],
-                value['listingCount']
-            )
-
-            q_index = Query.into(item_list_table).insert(
-                value['id'],
-                value['name'],
-                table_name
-            )
-
-            db.execute(str(q))
-            db.execute(str(q_index))
-            con.commit()
-            print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # ARTIFACT TABLE --------------------------------------------------
-    table_name = 'Artifact'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # DELIRIUM_ORB TABLE --------------------------------------------------
-    table_name = 'DeliriumOrb'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # INVITATION TABLE --------------------------------------------------
-    table_name = 'Invitation'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-    # MEMORY TABLE --------------------------------------------------
-    table_name = 'Memory'
-    response = (json.loads(index.send_request(item_types[table_name], index.current_league, table_name)))['lines']
-
-    base_type = Table(table_name)
-    db.execute(f'DELETE FROM {table_name}')
-
-    for obj in response:
-        value = map_values(obj)
-        q = Query.into(base_type).insert(
-            value['id'],
-            value['name'],
-            value['icon'],
-            value['chaosValue'],
-            value['listingCount']
-        )
-
-        q_index = Query.into(item_list_table).insert(
-            value['id'],
-            value['name'],
-            table_name
-        )
-
-        db.execute(str(q))
-        db.execute(str(q_index))
-        con.commit()
-        print(f"{table_name} Itemname: {value['name']} ID: {value['id']} import complete")
-
-
-create_db_tables
+create_db_tables()
 refresh_db_values()

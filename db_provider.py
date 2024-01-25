@@ -5,10 +5,13 @@ import json
 import re
 import sqlite3
 
-from pypika import Query, Table
+# https://pypika.readthedocs.io/en/latest/2_tutorial.html
+from pypika import Query, Table, Field
 
 import index
 import poe_types
+
+
 
 con = sqlite3.connect("poeflipper.db")
 db = con.cursor()
@@ -17,37 +20,18 @@ ItemList = 'ItemList'
 item_types = poe_types.item_types
 reward_types = poe_types.reward_types
 unique_types = poe_types.unique_types
+table_specs = poe_types.table_specs
 
 
 def create_db_tables():
-    db.execute(
-        "CREATE TABLE IF NOT EXISTS BaseType(id INTEGER, name, icon, levelRequired INTEGER, baseType, itemClass, chaosValue NUMERIC, listingCount, variant)")
-    db.execute("CREATE TABLE IF NOT EXISTS Currency(name, icon, chaosEquivalent NUMERIC)")
-    db.execute(
-        "CREATE TABLE IF NOT EXISTS DivinationCard(id INTEGER, name, icon, stackSize INTEGER, reward, rewardAmount INTEGER, rewardType, chaosValue NUMERIC, count INTEGER, listingCount INTEGER)")
-    db.execute(
-        "CREATE TABLE IF NOT EXISTS Essence(id INTEGER, name, icon, mapTier INTEGER, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Fossil(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Fragment(name, icon, chaosEquivalent NUMERIC)")
-    db.execute("CREATE TABLE IF NOT EXISTS Incubator(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Oil(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Resonator(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Scarab(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute(
-        "CREATE TABLE IF NOT EXISTS SkillGem(id INTEGER, name, icon, gemLevel INTEGER, gemQuality INTEGER, corrupted INTEGER, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute(
-        "CREATE TABLE IF NOT EXISTS Uniques(id INTEGER, name, icon, levelRequired INTEGER, baseType, itemClass, itemType, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Artifact(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute(
-        "CREATE TABLE IF NOT EXISTS DeliriumOrb(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute(
-        "CREATE TABLE IF NOT EXISTS Invitation(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
-    db.execute("CREATE TABLE IF NOT EXISTS Memory(id INTEGER, name, icon, chaosValue NUMERIC, listingCount INTEGER)")
 
-    db.execute("CREATE TABLE IF NOT EXISTS ItemList(id INTEGER, name TEXT, table_name TEXT)")
+    def generate_field_string(fields):
+        field_string = ', '.join(f"{field['name']} {field['type']}" for field in fields)
+        return field_string
 
-    # https://pypika.readthedocs.io/en/latest/2_tutorial.html
-    from pypika import Query, Table, Field
+    for table_spec in table_specs:
+        create_table_query = f"CREATE TABLE IF NOT EXISTS {table_spec['name']}({generate_field_string(table_spec['fields'])})"
+        db.execute(create_table_query)
 
     # https://docs.python.org/3/library/sqlite3.html
     # q = Query.from_('movie').select('name', 'year', 'score')
@@ -59,79 +43,42 @@ def create_db_tables():
     # print(res.fetchall())
 
 
+
 def map_values(obj, type=''):
-    values = {}
+    field_mapping = {
+        'id': 0,
+        'name': obj.get('name', ''),
+        'icon': obj.get('icon', ''),
+        'levelRequired': obj.get('levelRequired', 0),
+        'baseType': obj.get('baseType', ''),
+        'itemClass': obj.get('itemClass', ''),
+        'itemType': obj.get('itemType', ''),
+        'chaosValue': obj.get('chaosValue', obj.get('chaosEquivalent', 0)),
+        'listingCount': obj.get('listingCount', 0),
+        'stackSize': obj.get('stackSize', 1),
+        'count': obj.get('count', 0),
+        'mapTier': obj.get('mapTier', 1),
+        'gemLevel': obj.get('gemLevel', 0),
+        'gemQuality': obj.get('gemQuality', 0),
+        'corrupted': 1 if 'corrupted' in obj else 0,
+        'variant': obj.get('variant', ''),
+        'rewardType': '',
+        'rewardAmount': '1',
+        'reward': ''
+    }
 
-    if 'id' in obj:
-        values['id'] = obj['id']
-    if 'name' in obj:
-        values['name'] = obj['name']
-    if 'currencyTypeName' in obj:
-        values['name'] = obj['currencyTypeName']
-    if 'icon' in obj:
-        values['icon'] = obj['icon']
-    else:
-        values['icon'] = ''
-    if 'levelRequired' in obj:
-        values['levelRequired'] = obj['levelRequired']
-    else:
-        values['levelRequired'] = 0
-    if 'baseType' in obj:
-        values['baseType'] = obj['baseType']
-    if 'itemClass' in obj:
-        values['itemClass'] = obj['itemClass']
-    if 'itemType' in obj:
-        values['itemType'] = obj['itemType']
-    else:
-        values['itemType'] = ''
-    if 'chaosValue' in obj:
-        values['chaosValue'] = obj['chaosValue']
-    if 'chaosEquivalent' in obj:
-        values['chaosValue'] = obj['chaosEquivalent']
-    if 'listingCount' in obj:
-        values['listingCount'] = obj['listingCount']
-    if 'stackSize' in obj:
-        values['stackSize'] = obj['stackSize']
-    else:
-        values['stackSize'] = 1
-    if 'count' in obj:
-        values['count'] = obj['count']
-    if 'mapTier' in obj:
-        values['mapTier'] = obj['mapTier']
-    else:
-        values['mapTier'] = 1
-    if 'gemLevel' in obj:
-        values['gemLevel'] = obj['gemLevel']
-    if 'gemQuality' in obj:
-        values['gemQuality'] = obj['gemQuality']
-    else:
-        values['gemQuality'] = 0
-    if 'corrupted' in obj:
-        values['corrupted'] = 1
-    else:
-        values['corrupted'] = 0
-    if 'variant' in obj:
-        values['variant'] = obj['variant']
-    else:
-        values['variant'] = ''
-
-    if type == 'DivinationCard':
-        # Divination Card reward regex
+    if type == 'DivinationCard' and 'explicitModifiers' in obj:
         pattern = r'<(currencyitem|uniqueitem|gemitem|rareitem|magicitem|whiteitem|divination)+>\s*{(?:(\d+)x\s*)?([^}]+)}'
 
-        for explicitModifier in obj['explicitModifiers']:
-            match = re.search(pattern, explicitModifier['text'])
+        for explicit_modifier in obj['explicitModifiers']:
+            match = re.search(pattern, explicit_modifier.get('text', ''))
 
             if match:
-                values['rewardType'] = match.group(1)
-                values['rewardAmount'] = match.group(2) or 1
-                values['reward'] = match.group(3)
-            else:
-                values['rewardType'] = ''
-                values['rewardAmount'] = '1'
-                values['reward'] = ''
+                field_mapping['rewardType'] = match.group(1)
+                field_mapping['rewardAmount'] = match.group(2) or '1'
+                field_mapping['reward'] = match.group(3)
 
-    return values
+    return field_mapping
 
 
 def refresh_db_values():
@@ -610,4 +557,4 @@ def refresh_db_values():
 
 
 create_db_tables
-refresh_db_values
+refresh_db_values()

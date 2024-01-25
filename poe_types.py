@@ -40,3 +40,197 @@ unique_types = {
     "UniqueArmour": "itemoverview",
     "UniqueAccessory": "itemoverview"
 }
+
+table_specs = [
+    {
+        'name': 'BaseType',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'levelRequired', 'type': 'INTEGER'},
+            {'name': 'baseType', 'type': ''},
+            {'name': 'itemClass', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+            {'name': 'variant', 'type': ''},
+        ],
+    },
+    {
+        'name': 'Currency',
+        'fields': [
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosEquivalent', 'type': 'NUMERIC'},
+        ],
+    },
+    {
+        'name': 'DivinationCard',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'stackSize', 'type': 'INTEGER'},
+            {'name': 'reward', 'type': ''},
+            {'name': 'rewardAmount', 'type': 'INTEGER'},
+            {'name': 'rewardType', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'count', 'type': 'INTEGER'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Essence',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'mapTier', 'type': 'INTEGER'},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Fossils',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Fossils',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Fragments',
+        'fields': [
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosEquivalent', 'type': 'NUMERIC'},
+        ],
+    },
+    {
+        'name': 'Incubator',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Oil',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Resonator',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Scarab',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'SkillGem',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'gemLevel', 'type': 'INTEGER'},
+            {'name': 'gemQuality', 'type': 'INTEGER'},
+            {'name': 'corrupted', 'type': 'INTEGER'},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Uniques',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'levelRequired', 'type': 'INTEGER'},
+            {'name': 'baseType', 'type': ''},
+            {'name': 'itemClass', 'type': ''},
+            {'name': 'itemType', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Artifact',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'DeliriumOrb',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Invitation',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'Memory',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': ''},
+            {'name': 'icon', 'type': ''},
+            {'name': 'chaosValue', 'type': 'NUMERIC'},
+            {'name': 'listingCount', 'type': 'INTEGER'},
+        ],
+    },
+    {
+        'name': 'ItemList',
+        'fields': [
+            {'name': 'id', 'type': 'INTEGER'},
+            {'name': 'name', 'type': 'TEXT'},
+            {'name': 'table_name', 'type': 'TEXT'},
+        ],
+    },
+]

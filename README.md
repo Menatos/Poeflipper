@@ -5,7 +5,7 @@ Poeflipper serves as a discord bot which offers multiple functions to help you i
 
 Current methods are:
 
-!divinationcards_currency, divinationcards_uniques, divinationcards_fragment
+!divinationcards_currency, divinationcards_uniques, divinationcards_fragments
 
 
 Github Page:

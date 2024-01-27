@@ -68,7 +68,7 @@ def map_values(obj, type=''):
         'corrupted': 1 if 'corrupted' in obj else 0,
         'variant': obj.get('variant', ''),
         'rewardType': '',
-        'rewardAmount': '1',
+        'rewardAmount': '',
         'reward': ''
     }
 
@@ -87,7 +87,7 @@ def map_values(obj, type=''):
 
 def insert_into_db(response, table_spec, table_name, current_table, item_list_table):
     for obj in response:
-        values = map_values(obj)
+        values = map_values(obj, table_name)
 
         values_mapped = []
 

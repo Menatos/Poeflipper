@@ -33,9 +33,9 @@ client = discord.Client(intents=intents)
 
 commands = {
     '$divinationcards_currency',
-    '$divinationcards_unique',
-    '$divinationcards_fragment',
-    '$divinationcards_skillgem',
+    '$divinationcards_uniques',
+    '$divinationcards_fragments',
+    '$divinationcards_skillgems',
 }
 
 
@@ -73,6 +73,9 @@ async def on_message(message):
         await process_chunks(card_data, max_string_length, message.channel.send)
     if message.content.startswith('$divinationcards_fragments'):
         card_data = await calculations.calculate_divination_card_difference(fragment=True)
+        await process_chunks(card_data, max_string_length, message.channel.send)
+    if message.content.startswith('$divinationcards_skillGems'):
+        card_data = await calculations.calculate_divination_card_difference(skillGem=False)
         await process_chunks(card_data, max_string_length, message.channel.send)
 
 

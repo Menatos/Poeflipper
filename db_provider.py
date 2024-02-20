@@ -64,7 +64,7 @@ def map_values(obj, type=''):
         'count': obj.get('count', 0),
         'mapTier': obj.get('mapTier', 1),
         'gemLevel': obj.get('gemLevel', 0),
-        'gemQuality': obj.get('gemQuality', 0),
+        'quality': obj.get('quality', 0),
         'corrupted': 1 if 'corrupted' in obj else 0,
         'variant': obj.get('variant', ''),
         'rewardType': '',
@@ -82,6 +82,17 @@ def map_values(obj, type=''):
                 field_mapping['rewardType'] = match.group(1)
                 field_mapping['rewardAmount'] = match.group(2) or '1'
                 field_mapping['reward'] = match.group(3)
+
+            # Check for the presence of "corrupted" in the text
+            if '<corrupted>' in explicit_modifier.get('text', ''):
+                field_mapping['corrupted'] = 1
+            else:
+                field_mapping['corrupted'] = 0
+
+            # Extract amount of quality, default to 0 if not present
+            quality_match = re.search(r'<default>{Quality:}\s*<augmented>{\+(\d+)%}',
+                                      explicit_modifier.get('text', ''))
+            field_mapping['quality'] = int(quality_match.group(1)) if quality_match else 0
 
     return field_mapping
 

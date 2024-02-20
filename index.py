@@ -6,6 +6,7 @@ import requests
 import poe_types
 
 current_league = 'Affliction'
+league_start = ''
 
 item_types = poe_types.item_types
 reward_Types = poe_types.reward_types

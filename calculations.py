@@ -44,7 +44,7 @@ def sql_query(main_table, sub_table, reward_cost, low_confidence=False, skill_ge
              .from_(main_table)
              .join(sub_table)
              .on(main_table.reward == sub_table.name)
-             .select('name', 'chaosValue', 'stackSize', 'rewardAmount', sub_table.name, getattr(sub_table, reward_cost))
+             .select('name', 'chaosValue', 'corrupted', sub_table.name, getattr(sub_table, reward_cost))
              .where(main_table.listingCount > 30 and sub_table.listingCount > 30)
              .where(sub_table.gemLevel)
              )
@@ -53,12 +53,12 @@ def sql_query(main_table, sub_table, reward_cost, low_confidence=False, skill_ge
     return cards
 
 
-async def calculate_divination_card_difference(min_profit=10, max_profit=5000, price_off_set=1.0, currency=False, unique=False,fragment=True, skill_gem=False):
+def calculate_divination_card_difference(min_profit=10, max_profit=5000, price_off_set=1.0, currency=True, unique=True, fragment=True, skillGem=True):
     divination_card_table = Table('DivinationCard')
     currency_table = Table('Currency')
     uniques_table = Table('Uniques')
     fragment_table = Table('Fragment')
-    skill_gem_table = Table('SkillGem')
+    skillGem_table = Table('SkillGem')
 
     results = []
 
@@ -85,17 +85,20 @@ async def calculate_divination_card_difference(min_profit=10, max_profit=5000, p
     if fragment:
         fragment_cards = sql_query(divination_card_table, fragment_table, 'chaosEquivalent')
         for cards in fragment_cards:
-            evaluate_costs(cards, price_off_set, min_profit, max_profit)
+            result = evaluate_costs(cards, price_off_set, min_profit, max_profit)
+            if result:
+                results.append(result)
 
+# SKILL GEMS -------------------------------------------------------------------------
+    print(f'{poe_types.BLUE}SKILL GEMS -----------------------------------------------------{poe_types.RESET}')
+    if skillGem:
+        skillGem_cards = sql_query(divination_card_table, skillGem_table, 'chaosValue')
+        for cards in skillGem_cards:
             result = evaluate_costs(cards, price_off_set, min_profit, max_profit)
             if result:
                 results.append(result)
 
     return results
 
-# # SKILL GEMS -------------------------------------------------------------------------
-#     print(f'{poe_types.BLUE}SKILL GEMS -----------------------------------------------------{poe_types.RESET}')
-#     if skillGem:
 
-
-calculate_divination_card_difference
+calculate_divination_card_difference()

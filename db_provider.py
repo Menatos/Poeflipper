@@ -11,7 +11,6 @@ from pypika import Query, Table
 import index
 import poe_types
 
-
 con = sqlite3.connect("poeflipper.db")
 db = con.cursor()
 ItemList = "ItemList"
@@ -29,7 +28,6 @@ def is_field_present(table_spec, table_name, field_name):
 
 
 def create_db_tables():
-
     def generate_field_string(fields):
         field_string = ", ".join(f"{field['name']} {field['type']}" for field in fields)
         return field_string
@@ -72,7 +70,10 @@ def map_values(obj, type=""):
         "rewardType": "",
         "rewardAmount": "",
         "reward": "",
-        "detailsId": obj.get("detailsId", ""),
+        "receiveSparkLine": obj.get("receiveSparkLine", 0),
+        "paySparkLine": obj.get("paySparkLine", 0),
+        "sparkline": obj.get("sparkline", 0),
+        "detailsId": obj.get("detailsId", "")
     }
 
     # Match DivinationCard rewards to db fields
@@ -126,7 +127,6 @@ def insert_into_db(response, table_spec, table_name, current_table, item_list_ta
         )
 
         # Do not import relic uniques, they throw off the values
-        print(values)
         if values.get("detailsId") and "relic" in values.get("detailsId"):
             continue
 

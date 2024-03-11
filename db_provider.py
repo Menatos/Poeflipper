@@ -49,6 +49,8 @@ def create_db_tables():
 
 
 def map_values(obj, type=""):
+    superior_gems = ["Enlighten", "Enhance", "Empower"]
+
     field_mapping = {
         "id": obj.get("id", 0),
         "name": obj.get("name", obj.get("currencyTypeName", "")),
@@ -70,8 +72,10 @@ def map_values(obj, type=""):
         "rewardType": "",
         "rewardAmount": "",
         "reward": "",
+        "detailsId": obj.get("detailsId", ""),
     }
 
+    # Match DivinationCard rewards to db fields
     if type == "DivinationCard" and "explicitModifiers" in obj:
         pattern = r"<(currencyitem|uniqueitem|gemitem|rareitem|magicitem|whiteitem|divination)+>\s*{(?:(\d+)x\s*)?(?:((Level\s+)(\d+)(\s)+))*([^}]+)}"
 
@@ -83,7 +87,7 @@ def map_values(obj, type=""):
                 field_mapping["rewardAmount"] = match.group(2) or 1
                 field_mapping["reward"] = match.group(7)
                 field_mapping["gemLevel"] = match.group(5) or 1
-            if field_mapping["reward"] == "Enlighten" or "Empower" or "Enhance":
+            if field_mapping["reward"] in superior_gems:
                 field_mapping["reward"] = field_mapping["reward"] + " Support"
 
             # Check for the presence of "corrupted" in the text
@@ -121,6 +125,11 @@ def insert_into_db(response, table_spec, table_name, current_table, item_list_ta
             values["id"], values["name"], table_name
         )
 
+        # Do not import relic uniques, they throw off the values
+        print(values)
+        if values.get("detailsId") and "relic" in values.get("detailsId"):
+            continue
+
         # Execute the queries
         db.execute(str(q))
         db.execute(str(q_index))
@@ -143,6 +152,7 @@ def refresh_db_values():
         current_table = Table(table_name)
         db.execute(f"DELETE FROM {table_name}")
 
+        # Unique Table is joined instead of separate, separate queries get merged
         if table_name.startswith("Uniques"):
             for unique_type in unique_types:
                 response = json.loads(

@@ -5,12 +5,13 @@ import requests
 
 import poe_types
 
-current_league = 'Affliction'
-league_start = ''
+current_league = "Affliction"
+league_start = ""
 
 item_types = poe_types.item_types
 reward_Types = poe_types.reward_types
 unique_types = poe_types.unique_types
+
 
 def send_request(overview, league, type):
     api_url = f"https://poe.ninja/api/data/{overview}?league={league}&type={type}"
@@ -22,13 +23,14 @@ def send_request(overview, league, type):
         # Check if the request was successful (status code 200)
         if response.status_code == 200:
             # Save the raw response content in a variable
-            api_response = response.content.decode('utf-8')
+            api_response = response.content.decode("utf-8")
             return api_response
         else:
             print(f"Error: {response.status_code} - {response.text}")
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
+
 
 # WEITERE KATEGORIEN
 # UNIQUE Karten Fixen bei calculate divs

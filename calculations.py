@@ -12,8 +12,12 @@ db = con.cursor()
 # and the cost of the reward
 
 
-def evaluate_costs(cards, price_offset, min_profit, max_profit):
-    profit = round((cards[3] * cards[5] - (cards[1] * price_offset) * cards[2]), 2)
+def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
+    if card_type == "skillGem":
+        profit = 0
+        print(cards)
+    else:
+        profit = round((cards[3] * cards[5] - (cards[1] * price_offset) * cards[2]), 2)
     if (
         (cards[1] * cards[2]) < (cards[3] * cards[5])
         and profit >= min_profit
@@ -78,6 +82,8 @@ def sql_query(
                 "name",
                 "chaosValue",
                 "corrupted",
+                "quality",
+                "gemLevel",
                 sub_table.name,
                 getattr(sub_table, reward_cost),
             )
@@ -150,9 +156,14 @@ def calculate_divination_card_difference(
         f"{poe_types.BLUE}SKILL GEMS -----------------------------------------------------{poe_types.RESET}"
     )
     if skillGem:
-        skillGem_cards = sql_query(divination_card_table, skillGem_table, "chaosValue")
+        card_type = "skillGem"
+        skillGem_cards = sql_query(
+            divination_card_table, skillGem_table, "chaosValue", False, True
+        )
         for cards in skillGem_cards:
-            result = evaluate_costs(cards, price_off_set, min_profit, max_profit)
+            result = evaluate_costs(
+                cards, price_off_set, min_profit, max_profit, card_type
+            )
             if result:
                 results.append(result)
 

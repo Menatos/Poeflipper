@@ -64,7 +64,7 @@ def map_values(obj, type=""):
         "count": obj.get("count", 0),
         "mapTier": obj.get("mapTier", 1),
         "gemLevel": obj.get("gemLevel", 0),
-        "quality": obj.get("quality", 0),
+        "quality": obj.get("gemQuality", 0),
         "corrupted": 1 if "corrupted" in obj else 0,
         "variant": obj.get("variant", ""),
         "rewardType": "",
@@ -73,15 +73,18 @@ def map_values(obj, type=""):
     }
 
     if type == "DivinationCard" and "explicitModifiers" in obj:
-        pattern = r"<(currencyitem|uniqueitem|gemitem|rareitem|magicitem|whiteitem|divination)+>\s*{(?:(\d+)x\s*)?([^}]+)}"
+        pattern = r"<(currencyitem|uniqueitem|gemitem|rareitem|magicitem|whiteitem|divination)+>\s*{(?:(\d+)x\s*)?(?:((Level\s+)(\d+)(\s)+))*([^}]+)}"
 
         for explicit_modifier in obj["explicitModifiers"]:
             match = re.search(pattern, explicit_modifier.get("text", ""))
 
             if match:
                 field_mapping["rewardType"] = match.group(1)
-                field_mapping["rewardAmount"] = match.group(2) or "1"
-                field_mapping["reward"] = match.group(3)
+                field_mapping["rewardAmount"] = match.group(2) or 1
+                field_mapping["reward"] = match.group(7)
+                field_mapping["gemLevel"] = match.group(5) or 1
+            if field_mapping["reward"] == "Enlighten" or "Empower" or "Enhance":
+                field_mapping["reward"] = field_mapping["reward"] + " Support"
 
             # Check for the presence of "corrupted" in the text
             if "<corrupted>" in explicit_modifier.get("text", ""):

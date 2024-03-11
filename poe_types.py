@@ -87,9 +87,9 @@ table_specs = [
             {'name': 'id', 'type': 'INTEGER'},
             {'name': 'name', 'type': ''},
             {'name': 'icon', 'type': ''},
-            {'name': 'mapTier', 'type': 'INTEGER'},
             {'name': 'chaosValue', 'type': 'NUMERIC'},
             {'name': 'listingCount', 'type': 'INTEGER'},
+            {'name': 'mapTier', 'type': 'INTEGER'},
         ],
     },
     {

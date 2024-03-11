@@ -89,7 +89,7 @@ def calculate_divination_card_difference(min_profit=10, max_profit=5000, price_o
             if result:
                 results.append(result)
 
-# SKILL GEMS -------------------------------------------------------------------------
+    # SKILL GEMS -------------------------------------------------------------------------
     print(f'{poe_types.BLUE}SKILL GEMS -----------------------------------------------------{poe_types.RESET}')
     if skillGem:
         skillGem_cards = sql_query(divination_card_table, skillGem_table, 'chaosValue')

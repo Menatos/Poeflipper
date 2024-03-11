@@ -11,7 +11,6 @@ from pypika import Query, Table
 import index
 import poe_types
 
-
 con = sqlite3.connect("poeflipper.db")
 db = con.cursor()
 ItemList = "ItemList"
@@ -29,7 +28,6 @@ def is_field_present(table_spec, table_name, field_name):
 
 
 def create_db_tables():
-
     def generate_field_string(fields):
         field_string = ", ".join(f"{field['name']} {field['type']}" for field in fields)
         return field_string

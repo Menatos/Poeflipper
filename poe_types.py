@@ -61,7 +61,6 @@ table_specs = [
         "name": "Currency",
         "fields": [
             {"name": "name", "type": ""},
-            {"name": "icon", "type": ""},
             {"name": "chaosEquivalent", "type": "NUMERIC"},
             {"name": "receiveSparkLine", "type": "NUMERIC"},
             {"name": "paySparkLine", "type": "NUMERIC"}
@@ -112,7 +111,6 @@ table_specs = [
         "name": "Fragment",
         "fields": [
             {"name": "name", "type": ""},
-            {"name": "icon", "type": ""},
             {"name": "chaosEquivalent", "type": "NUMERIC"},
             {"name": "receiveSparkLine", "type": "NUMERIC"},
             {"name": "paySparkLine", "type": "NUMERIC"}

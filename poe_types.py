@@ -54,6 +54,7 @@ table_specs = [
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
             {"name": "variant", "type": ""},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -62,6 +63,8 @@ table_specs = [
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosEquivalent", "type": "NUMERIC"},
+            {"name": "receiveSparkLine", "type": "NUMERIC"},
+            {"name": "paySparkLine", "type": "NUMERIC"}
         ],
     },
     {
@@ -79,6 +82,7 @@ table_specs = [
             {"name": "rewardType", "type": ""},
             {"name": "rewardAmount", "type": "INTEGER"},
             {"name": "reward", "type": ""},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -90,6 +94,7 @@ table_specs = [
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
             {"name": "mapTier", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -100,6 +105,7 @@ table_specs = [
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -108,6 +114,8 @@ table_specs = [
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosEquivalent", "type": "NUMERIC"},
+            {"name": "receiveSparkLine", "type": "NUMERIC"},
+            {"name": "paySparkLine", "type": "NUMERIC"}
         ],
     },
     {
@@ -118,6 +126,7 @@ table_specs = [
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -128,6 +137,7 @@ table_specs = [
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -138,6 +148,7 @@ table_specs = [
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -148,6 +159,7 @@ table_specs = [
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -161,6 +173,7 @@ table_specs = [
             {"name": "gemLevel", "type": "INTEGER"},
             {"name": "quality", "type": "INTEGER"},
             {"name": "corrupted", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -175,6 +188,7 @@ table_specs = [
             {"name": "itemType", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -185,6 +199,7 @@ table_specs = [
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -195,6 +210,7 @@ table_specs = [
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -205,6 +221,7 @@ table_specs = [
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {
@@ -215,6 +232,7 @@ table_specs = [
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "sparkline", "type": "NUMERIC"}
         ],
     },
     {

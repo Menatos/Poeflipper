@@ -70,6 +70,9 @@ def map_values(obj, type=""):
         "rewardType": "",
         "rewardAmount": "",
         "reward": "",
+        "receiveSparkLine": obj.get("receiveSparkLine", 0),
+        "paySparkLine": obj.get("paySparkLine", 0),
+        "sparkline": obj.get("sparkline", 0)
     }
 
     if type == "DivinationCard" and "explicitModifiers" in obj:

@@ -173,4 +173,4 @@ def calculate_divination_card_difference(
     return results
 
 
-calculate_divination_card_difference()
+# calculate_divination_card_difference()

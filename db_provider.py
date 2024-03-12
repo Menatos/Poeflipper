@@ -175,5 +175,5 @@ def refresh_db_values():
         insert_into_db(response, table_spec, table_name, current_table, item_list_table)
 
 
-create_db_tables()
-refresh_db_values()
+# create_db_tables()
+# refresh_db_values()

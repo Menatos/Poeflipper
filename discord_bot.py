@@ -4,12 +4,18 @@ import logging.handlers
 import calculations
 from dotenv import load_dotenv
 from os.path import join, dirname
+from discord import app_commands
+
+# Variables
+server_id = 696033204179697795
+max_string_length = 2000
 
 # ENV
 env_path = join(dirname(__file__), ".env")
 load_dotenv(env_path)
 
 # DISCORD LOGGING HANDLER
+os.makedirs("logs", exist_ok=True)
 logger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
 logging.getLogger("discord.http").setLevel(logging.INFO)
@@ -32,6 +38,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
+tree = app_commands.CommandTree(client)
 
 commands = {
     "$divinationcards_currency",
@@ -39,7 +46,6 @@ commands = {
     "$divinationcards_fragments",
     "$divinationcards_skillgems",
 }
-
 
 async def process_chunks(input_string, chunk_size, processing_function):
     chunks = "\n".join(input_string).split("\n")
@@ -57,16 +63,31 @@ async def process_chunks(input_string, chunk_size, processing_function):
             current_chunk[:-1]
         )  # Process the last chunk without the trailing "|"
 
+# Add the guild ids in which the slash command will appear.
+# If it should be in all, remove the argument, but note that
+# it will take some time (up to an hour) to register the
+# command if it's for all guilds.
+@tree.command(
+    name="divcards_currency",
+    description="Flip currency cards",
+    guild=discord.Object(id=server_id)
+)
+async def first_command(ctx):
+    await ctx.response.send_message("Hello!")
+
+    card_data = await calculations.calculate_divination_card_difference(
+        currency=True
+    )
+    await process_chunks(card_data, max_string_length, ctx.response.send_message)
 
 @client.event
 async def on_ready():
+    await tree.sync(guild=discord.Object(id=server_id))
     print(f"We have logged in as {client.user}")
 
 
 @client.event
 async def on_message(message):
-    max_string_length = 2000
-
     if message.author == client.user:
         return
 

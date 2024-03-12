@@ -76,6 +76,7 @@ table_specs = [
             {"name": "count", "type": "INTEGER"},
             {"name": "stackSize", "type": "INTEGER"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "gemLevel", "type": "INTEGER"},
             {"name": "quality", "type": ""},
             {"name": "corrupted", "type": ""},
             {"name": "rewardType", "type": ""},

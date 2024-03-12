@@ -12,24 +12,31 @@ db = con.cursor()
 # and the cost of the reward
 
 
-def evaluate_costs(cards, price_offset, min_profit, max_profit):
-    profit = round((cards[3] * cards[5] - (cards[1] * price_offset) * cards[2]), 2)
-    if (
-        (cards[1] * cards[2]) < (cards[3] * cards[5])
-        and profit >= min_profit
-        and profit <= max_profit
-    ):
+def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
+    card_name = cards[0]
+    card_amount = int(cards[1])
+    card_value = float(cards[2])
+    card_cost = card_amount * price_offset * card_value
+    reward_name = cards[4]
+    reward_amount = int(cards[3])
+    reward_value = float(cards[5])
+
+    profit = round(((reward_amount * reward_value) - (card_cost)), 2)
+
+    if (card_amount * card_value) < (
+        reward_amount * reward_value
+    ) and min_profit <= profit <= max_profit:
         profitable_card = (
             "Name of card:",
-            cards[0],
+            card_name,
             "Cost of cards:",
-            int(cards[1]) * float(cards[2]),
+            card_cost,
             "Name of reward:",
-            cards[4],
+            reward_name,
             "Amount:",
-            int(cards[3]),
+            reward_amount,
             "Cost of reward:",
-            int(cards[5]),
+            reward_value,
         )
         profit_from_card = (f"{poe_types.GREEN}Profit:", profit, f"{poe_types.RESET}")
         print(profitable_card)
@@ -77,12 +84,14 @@ def sql_query(
             .select(
                 "name",
                 "chaosValue",
-                "corrupted",
+                "stackSize",
+                "rewardAmount",
                 sub_table.name,
                 getattr(sub_table, reward_cost),
             )
-            .where(main_table.listingCount > 30 and sub_table.listingCount > 30)
-            .where(sub_table.gemLevel)
+            .where(main_table.gemLevel == sub_table.gemLevel)
+            .where(main_table.quality == sub_table.quality)
+            .where(main_table.corrupted == sub_table.corrupted)
         )
 
     cards = db.execute(str(q)).fetchall()
@@ -150,9 +159,14 @@ def calculate_divination_card_difference(
         f"{poe_types.BLUE}SKILL GEMS -----------------------------------------------------{poe_types.RESET}"
     )
     if skillGem:
-        skillGem_cards = sql_query(divination_card_table, skillGem_table, "chaosValue")
+        card_type = "skillGem"
+        skillGem_cards = sql_query(
+            divination_card_table, skillGem_table, "chaosValue", False, True
+        )
         for cards in skillGem_cards:
-            result = evaluate_costs(cards, price_off_set, min_profit, max_profit)
+            result = evaluate_costs(
+                cards, price_off_set, min_profit, max_profit, card_type
+            )
             if result:
                 results.append(result)
 

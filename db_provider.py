@@ -62,6 +62,7 @@ def map_values(obj, type=""):
         "rewardType": "",
         "rewardAmount": "",
         "reward": "",
+        "links": obj.get("links", 0),
         "receiveSparkLine": obj.get("receiveSparkLine", 0),
         "paySparkLine": obj.get("paySparkLine", 0),
         "sparkline": obj.get("sparkline", 0),

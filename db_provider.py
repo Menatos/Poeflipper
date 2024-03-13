@@ -1,51 +1,43 @@
-# This file takes care of importing all the poe ninja data into a sqlite3 database.
-# Value mapping is also done in this file.
-
 import json
 import re
 import sqlite3
 
-# https://pypika.readthedocs.io/en/latest/2_tutorial.html
+# Import PyPika for building SQL queries
 from pypika import Query, Table
 
+# Import custom modules
 import index
 import poe_types
 
+# Connect to the SQLite database
 con = sqlite3.connect("poeflipper.db")
 db = con.cursor()
 ItemList = "ItemList"
 
+# Define item types, reward types, unique types, and table specifications
 item_types = poe_types.item_types
 reward_types = poe_types.reward_types
 unique_types = poe_types.unique_types
 table_specs = poe_types.table_specs
 
-
+# Check if a field is present in a given table specification
 def is_field_present(table_spec, table_name, field_name):
     if table_spec["name"] == table_name:
         return any(field["name"] == field_name for field in table_spec["fields"])
     return False
 
-
+# Create database tables based on predefined specifications
 def create_db_tables():
     def generate_field_string(fields):
         field_string = ", ".join(f"{field['name']} {field['type']}" for field in fields)
         return field_string
 
+    # Iterate over table specifications and create tables
     for table_spec in table_specs:
         create_table_query = f"CREATE TABLE IF NOT EXISTS {table_spec['name']}({generate_field_string(table_spec['fields'])})"
         db.execute(create_table_query)
 
-    # https://docs.python.org/3/library/sqlite3.html
-    # q = Query.from_('movie').select('name', 'year', 'score')
-    #
-    # con = sqlite3.connect("tutorial.db")
-    # cur = con.cursor()
-    # res = cur.execute(str(q))
-    #
-    # print(res.fetchall())
-
-
+# Map values from the received JSON object to the corresponding fields in the database
 def map_values(obj, type=""):
     superior_gems = ["Enlighten", "Enhance", "Empower"]
 
@@ -108,11 +100,10 @@ def map_values(obj, type=""):
 
     return field_mapping
 
-
+# Insert values into the database tables based on the received response and table specifications
 def insert_into_db(response, table_spec, table_name, current_table, item_list_table):
     for obj in response:
         values = map_values(obj, table_name)
-
         values_mapped = []
 
         # Build the query dynamically based on the table specification
@@ -138,7 +129,7 @@ def insert_into_db(response, table_spec, table_name, current_table, item_list_ta
             f"{table_name} Itemname: {values['name']} ID: {values['id']} import complete"
         )
 
-
+# Refresh values in the database by deleting records and importing new ones
 def refresh_db_values():
     # Delete all records from ItemList
     db.execute(f"DELETE FROM {ItemList}")
@@ -174,6 +165,6 @@ def refresh_db_values():
 
         insert_into_db(response, table_spec, table_name, current_table, item_list_table)
 
-
+# Create database tables and refresh values
 create_db_tables()
 refresh_db_values()

@@ -50,9 +50,10 @@ def get_league_names():
     except requests.RequestException as e:
         print(f"Request failed: {e}")
 
+leagues = get_league_names()
 
 def send_request(overview, type):
-    league = get_league_names()[0]
+    league = leagues[0]
     api_url = f"https://poe.ninja/api/data/{overview}?league={league}&type={type}"
 
     try:

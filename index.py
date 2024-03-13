@@ -87,5 +87,3 @@ def send_request(overview, type):
 # https://poe.ninja/api/data/currencyhistory?league=Affliction&type=Currency&currencyId=22
 
 # Inscribed ultimatums
-
-print(get_league_names()[0])

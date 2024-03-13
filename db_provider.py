@@ -65,6 +65,7 @@ def map_values(obj, type=""):
         "rewardType": "",
         "rewardAmount": "",
         "reward": "",
+        "links": obj.get("links", 0),
         "receiveSparkLine": obj.get("receiveSparkLine", 0),
         "paySparkLine": obj.get("paySparkLine", 0),
         "sparkline": obj.get("sparkline", 0),
@@ -153,7 +154,7 @@ def refresh_db_values():
             for unique_type in unique_types:
                 response = json.loads(
                     index.send_request(
-                        unique_types[unique_type], index.current_league, unique_type
+                        unique_types[unique_type], unique_type
                     )
                 )["lines"]
                 insert_into_db(
@@ -163,7 +164,6 @@ def refresh_db_values():
             response = json.loads(
                 index.send_request(
                     item_types[table_name],
-                    index.current_league,
                     table_name,
                 )
             )["lines"]

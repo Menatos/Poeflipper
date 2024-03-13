@@ -20,11 +20,13 @@ reward_types = poe_types.reward_types
 unique_types = poe_types.unique_types
 table_specs = poe_types.table_specs
 
+
 # Check if a field is present in a given table specification
 def is_field_present(table_spec, table_name, field_name):
     if table_spec["name"] == table_name:
         return any(field["name"] == field_name for field in table_spec["fields"])
     return False
+
 
 # Create database tables based on predefined specifications
 def create_db_tables():
@@ -36,6 +38,7 @@ def create_db_tables():
     for table_spec in table_specs:
         create_table_query = f"CREATE TABLE IF NOT EXISTS {table_spec['name']}({generate_field_string(table_spec['fields'])})"
         db.execute(create_table_query)
+
 
 # Map values from the received JSON object to the corresponding fields in the database
 def map_values(obj, type=""):
@@ -65,7 +68,7 @@ def map_values(obj, type=""):
         "receiveSparkLine": obj.get("receiveSparkLine", 0),
         "paySparkLine": obj.get("paySparkLine", 0),
         "sparkline": obj.get("sparkline", 0),
-        "detailsId": obj.get("detailsId", "")
+        "detailsId": obj.get("detailsId", ""),
     }
 
     # Match DivinationCard rewards to db fields
@@ -100,6 +103,7 @@ def map_values(obj, type=""):
 
     return field_mapping
 
+
 # Insert values into the database tables based on the received response and table specifications
 def insert_into_db(response, table_spec, table_name, current_table, item_list_table):
     for obj in response:
@@ -128,6 +132,7 @@ def insert_into_db(response, table_spec, table_name, current_table, item_list_ta
         print(
             f"{table_name} Itemname: {values['name']} ID: {values['id']} import complete"
         )
+
 
 # Refresh values in the database by deleting records and importing new ones
 def refresh_db_values():
@@ -164,6 +169,7 @@ def refresh_db_values():
             )["lines"]
 
         insert_into_db(response, table_spec, table_name, current_table, item_list_table)
+
 
 # Create database tables and refresh values
 create_db_tables()

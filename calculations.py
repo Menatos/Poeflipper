@@ -61,38 +61,17 @@ def sql_query(
             getattr(sub_table, reward_cost),
         )
     )
+
+    if 'Uniques' in str(sub_table):
+        q = q.where(sub_table.links == 0)
+
     if low_confidence:
-        q = (
-            Query.from_(main_table)
-            .join(sub_table)
-            .on(main_table.reward == sub_table.name)
-            .select(
-                "name",
-                "chaosValue",
-                "stackSize",
-                "rewardAmount",
-                sub_table.name,
-                getattr(sub_table, reward_cost),
-            )
-            .where(main_table.listingCount > 30 and sub_table.listingCount > 30)
-        )
+        q = q.where(main_table.listingCount > 30 and sub_table.listingCount > 30)
+
     if skill_gem:
-        q = (
-            Query.from_(main_table)
-            .join(sub_table)
-            .on(main_table.reward == sub_table.name)
-            .select(
-                "name",
-                "chaosValue",
-                "stackSize",
-                "rewardAmount",
-                sub_table.name,
-                getattr(sub_table, reward_cost),
-            )
-            .where(main_table.gemLevel == sub_table.gemLevel)
-            .where(main_table.quality == sub_table.quality)
-            .where(main_table.corrupted == sub_table.corrupted)
-        )
+        q = q.where(main_table.gemLevel == sub_table.gemLevel)
+        q = q.where(main_table.quality == sub_table.quality)
+        q = q.where(main_table.corrupted == sub_table.corrupted)
 
     cards = db.execute(str(q)).fetchall()
     return cards
@@ -102,10 +81,10 @@ def calculate_divination_card_difference(
     min_profit=10,
     max_profit=5000,
     price_off_set=1.0,
-    currency=True,
+    currency=False,
     unique=True,
-    fragment=True,
-    skillGem=True,
+    fragment=False,
+    skillGem=False,
 ):
     divination_card_table = Table("DivinationCard")
     currency_table = Table("Currency")

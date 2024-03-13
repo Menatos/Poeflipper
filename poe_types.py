@@ -187,6 +187,7 @@ table_specs = [
             {"name": "itemType", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
             {"name": "listingCount", "type": "INTEGER"},
+            {"name": "links", "type": "INTEGER"},
             {"name": "sparkline", "type": "NUMERIC"}
         ],
     },

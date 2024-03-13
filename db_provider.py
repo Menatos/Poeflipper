@@ -70,6 +70,7 @@ def map_values(obj, type=""):
         "rewardType": "",
         "rewardAmount": "",
         "reward": "",
+        "links": obj.get("links", 0),
         "receiveSparkLine": obj.get("receiveSparkLine", 0),
         "paySparkLine": obj.get("paySparkLine", 0),
         "sparkline": obj.get("sparkline", 0),
@@ -174,6 +175,6 @@ def refresh_db_values():
 
         insert_into_db(response, table_spec, table_name, current_table, item_list_table)
 
-
 create_db_tables()
 refresh_db_values()
+

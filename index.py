@@ -73,12 +73,8 @@ def send_request(overview, type):
     except requests.RequestException as e:
         print(f"Request failed: {e}")
 
-# WEITERE KATEGORIEN
-# UNIQUE Karten Fixen bei calculate divs
 # DISCORD Functions statt messages
-# GEMLEVEL divcards
 # Omens
-# Refactor db import
 # Alert bei Preisänderung
 # Autopull der POB-Daten
 # Regex Cluster Jewel

@@ -64,8 +64,9 @@ def sql_query(
         )
     )
 
-    if 'Uniques' in str(sub_table):
+    if "Uniques" in str(sub_table):
         q = q.where(sub_table.links == 0)
+        q = q.where(main_table.mapTier == sub_table.mapTier)
 
     # Add additional conditions based on parameters
     if low_confidence:

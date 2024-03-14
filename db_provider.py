@@ -57,8 +57,8 @@ def map_values(obj, type=""):
         "listingCount": obj.get("listingCount", 0),
         "stackSize": obj.get("stackSize", 1),
         "count": obj.get("count", 0),
-        "mapTier": obj.get("mapTier", 1),
-        "gemLevel": obj.get("gemLevel", 0),
+        "mapTier": obj.get("mapTier", 0),
+        "gemLevel": obj.get("gemLevel", 1),
         "quality": obj.get("gemQuality", 0),
         "corrupted": 1 if "corrupted" in obj else 0,
         "variant": obj.get("variant", ""),
@@ -74,16 +74,18 @@ def map_values(obj, type=""):
 
     # Match DivinationCard rewards to db fields
     if type == "DivinationCard" and "explicitModifiers" in obj:
-        pattern = r"<(currencyitem|uniqueitem|gemitem|rareitem|magicitem|whiteitem|divination)+>\s*{(?:(\d+)x\s*)?(?:((Level\s+)(\d+)(\s)+))*([^}]+)}"
+        pattern = r"<(\w+item|divination)+>\s*{(?:(\d+)x\s*)?(?:Level\s+(\d+)\s+)*([^}]+)}(?:.*{Map Tier:}.*{(\d+)})*"
 
         for explicit_modifier in obj["explicitModifiers"]:
-            match = re.search(pattern, explicit_modifier.get("text", ""))
+            string = explicit_modifier.get("text", "").replace("\n", "")
+            match = re.search(pattern, string)
 
             if match:
                 field_mapping["rewardType"] = match.group(1)
                 field_mapping["rewardAmount"] = match.group(2) or 1
-                field_mapping["reward"] = match.group(7)
-                field_mapping["gemLevel"] = match.group(5) or 1
+                field_mapping["reward"] = match.group(4)
+                field_mapping["gemLevel"] = match.group(3) or 1
+                field_mapping["mapTier"] = match.group(5) or 0
             if field_mapping["reward"] in superior_gems:
                 field_mapping["reward"] = field_mapping["reward"] + " Support"
 
@@ -153,9 +155,7 @@ def refresh_db_values():
         if table_name.startswith("Uniques"):
             for unique_type in unique_types:
                 response = json.loads(
-                    index.send_request(
-                        unique_types[unique_type], unique_type
-                    )
+                    index.send_request(unique_types[unique_type], unique_type)
                 )["lines"]
                 insert_into_db(
                     response, table_spec, table_name, current_table, item_list_table

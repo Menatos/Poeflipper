@@ -50,7 +50,9 @@ def get_league_names():
     except requests.RequestException as e:
         print(f"Request failed: {e}")
 
+
 leagues = get_league_names()
+
 
 def send_request(overview, type):
     league = leagues[0]
@@ -70,7 +72,6 @@ def send_request(overview, type):
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
-
 
 # WEITERE KATEGORIEN
 # UNIQUE Karten Fixen bei calculate divs

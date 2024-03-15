@@ -55,13 +55,14 @@ def sql_query(
         .join(sub_table)
         .on(main_table.reward == sub_table.name)
         .select(
-            "name",
+            main_table.name,
             "chaosValue",
             "stackSize",
             "rewardAmount",
             sub_table.name,
             getattr(sub_table, reward_cost),
         )
+        .groupby(main_table.name)
     )
 
     if "Uniques" in str(sub_table):

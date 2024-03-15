@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from pypika import Query, Table
 import poe_types
@@ -157,6 +158,45 @@ def calculate_divination_card_difference(
 
     return results
 
+def alert_on_price_change():
+    table_specs = poe_types.table_specs
+    prices_higher = []
+    prices_lower = []
+
+    for table_spec in [t for t in table_specs if t["name"] != "ItemList"]:
+        table_name = table_spec["name"]
+        current_table = Table(table_name)
+
+        # Create a query using the PyPika library
+        q = (
+            Query.from_(current_table)
+            .select(
+                "name",
+                "chaosValue",
+                "sparkline"
+            )
+        )
+
+        # Execute the query and fetch results
+        data = db.execute(str(q)).fetchall()
+
+        print(data)
+
+        for item in data:
+            name = item[0]
+            value = item[1]
+            sparkline = item[2].replace("'", '"')
+
+            print(item)
+            # print(name)
+            # print(sparkline)
+
 
 # Run the main function
-calculate_divination_card_difference()
+# calculate_divination_card_difference()
+alert_on_price_change()
+
+# 10 kennen
+# hintergrundgeschichte
+# wortlaut kurzversion
+

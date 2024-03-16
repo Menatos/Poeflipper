@@ -1,51 +1,46 @@
-# This file takes care of importing all the poe ninja data into a sqlite3 database.
-# Value mapping is also done in this file.
-
 import json
 import re
 import sqlite3
 
-# https://pypika.readthedocs.io/en/latest/2_tutorial.html
+# Import PyPika for building SQL queries
 from pypika import Query, Table
 
+# Import custom modules
 import index
 import poe_types
 
+# Connect to the SQLite database
 con = sqlite3.connect("poeflipper.db")
 db = con.cursor()
 ItemList = "ItemList"
 
+# Define item types, reward types, unique types, and table specifications
 item_types = poe_types.item_types
 reward_types = poe_types.reward_types
 unique_types = poe_types.unique_types
 table_specs = poe_types.table_specs
 
 
+# Check if a field is present in a given table specification
 def is_field_present(table_spec, table_name, field_name):
     if table_spec["name"] == table_name:
         return any(field["name"] == field_name for field in table_spec["fields"])
     return False
 
 
+# Create database tables based on predefined specifications
 def create_db_tables():
     def generate_field_string(fields):
         field_string = ", ".join(f"{field['name']} {field['type']}" for field in fields)
         return field_string
 
+    # Iterate over table specifications and create tables
     for table_spec in table_specs:
         create_table_query = f"CREATE TABLE IF NOT EXISTS {table_spec['name']}({generate_field_string(table_spec['fields'])})"
         db.execute(create_table_query)
 
-    # https://docs.python.org/3/library/sqlite3.html
-    # q = Query.from_('movie').select('name', 'year', 'score')
-    #
-    # con = sqlite3.connect("tutorial.db")
-    # cur = con.cursor()
-    # res = cur.execute(str(q))
-    #
-    # print(res.fetchall())
 
-
+# Map values from the received JSON object to the corresponding fields in the database
 def map_values(obj, type=""):
     superior_gems = ["Enlighten", "Enhance", "Empower"]
 
@@ -62,32 +57,35 @@ def map_values(obj, type=""):
         "listingCount": obj.get("listingCount", 0),
         "stackSize": obj.get("stackSize", 1),
         "count": obj.get("count", 0),
-        "mapTier": obj.get("mapTier", 1),
-        "gemLevel": obj.get("gemLevel", 0),
+        "mapTier": obj.get("mapTier", 0),
+        "gemLevel": obj.get("gemLevel", 1),
         "quality": obj.get("gemQuality", 0),
         "corrupted": 1 if "corrupted" in obj else 0,
         "variant": obj.get("variant", ""),
         "rewardType": "",
         "rewardAmount": "",
         "reward": "",
+        "links": obj.get("links", 0),
         "receiveSparkLine": obj.get("receiveSparkLine", 0),
         "paySparkLine": obj.get("paySparkLine", 0),
         "sparkline": obj.get("sparkline", 0),
-        "detailsId": obj.get("detailsId", "")
+        "detailsId": obj.get("detailsId", ""),
     }
 
     # Match DivinationCard rewards to db fields
     if type == "DivinationCard" and "explicitModifiers" in obj:
-        pattern = r"<(currencyitem|uniqueitem|gemitem|rareitem|magicitem|whiteitem|divination)+>\s*{(?:(\d+)x\s*)?(?:((Level\s+)(\d+)(\s)+))*([^}]+)}"
+        pattern = r"<(\w+item|divination)+>\s*{(?:(\d+)x\s*)?(?:Level\s+(\d+)\s+)*([^}]+)}(?:.*{Map Tier:}.*{(\d+)})*"
 
         for explicit_modifier in obj["explicitModifiers"]:
-            match = re.search(pattern, explicit_modifier.get("text", ""))
+            string = explicit_modifier.get("text", "").replace("\n", "")
+            match = re.search(pattern, string)
 
             if match:
                 field_mapping["rewardType"] = match.group(1)
                 field_mapping["rewardAmount"] = match.group(2) or 1
-                field_mapping["reward"] = match.group(7)
-                field_mapping["gemLevel"] = match.group(5) or 1
+                field_mapping["reward"] = match.group(4)
+                field_mapping["gemLevel"] = match.group(3) or 1
+                field_mapping["mapTier"] = match.group(5) or 0
             if field_mapping["reward"] in superior_gems:
                 field_mapping["reward"] = field_mapping["reward"] + " Support"
 
@@ -109,10 +107,10 @@ def map_values(obj, type=""):
     return field_mapping
 
 
+# Insert values into the database tables based on the received response and table specifications
 def insert_into_db(response, table_spec, table_name, current_table, item_list_table):
     for obj in response:
         values = map_values(obj, table_name)
-
         values_mapped = []
 
         # Build the query dynamically based on the table specification
@@ -139,6 +137,7 @@ def insert_into_db(response, table_spec, table_name, current_table, item_list_ta
         )
 
 
+# Refresh values in the database by deleting records and importing new ones
 def refresh_db_values():
     # Delete all records from ItemList
     db.execute(f"DELETE FROM {ItemList}")
@@ -156,9 +155,7 @@ def refresh_db_values():
         if table_name.startswith("Uniques"):
             for unique_type in unique_types:
                 response = json.loads(
-                    index.send_request(
-                        unique_types[unique_type], index.current_league, unique_type
-                    )
+                    index.send_request(unique_types[unique_type], unique_type)
                 )["lines"]
                 insert_into_db(
                     response, table_spec, table_name, current_table, item_list_table
@@ -167,7 +164,6 @@ def refresh_db_values():
             response = json.loads(
                 index.send_request(
                     item_types[table_name],
-                    index.current_league,
                     table_name,
                 )
             )["lines"]
@@ -175,5 +171,6 @@ def refresh_db_values():
         insert_into_db(response, table_spec, table_name, current_table, item_list_table)
 
 
+# Create database tables and refresh values
 create_db_tables()
 refresh_db_values()

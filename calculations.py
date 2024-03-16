@@ -12,7 +12,7 @@ db = con.cursor()
 # and the cost of the reward
 
 
-def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
+def evaluate_costs(cards, price_offset, min_profit, max_profit):
     card_name = cards[0]
     card_amount = int(cards[1])
     card_value = float(cards[2])
@@ -39,10 +39,10 @@ def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
             reward_value,
         )
         profit_from_card = (f"{poe_types.GREEN}Profit:", profit, f"{poe_types.RESET}")
-        print(profitable_card)
-        print(profit_from_card)
+        # print(profitable_card)
+        # print(profit_from_card)
         # f"{cards[0]} >> {profit}c"
-        return f"{cards[0]} >> {int(cards[3])} {cards[4]} >> {profit}c"
+        return f"{card_name} >> {reward_amount} {reward_name} >> {profit}c"
 
 
 def sql_query(
@@ -102,10 +102,10 @@ def calculate_divination_card_difference(
     min_profit=10,
     max_profit=5000,
     price_off_set=1.0,
-    currency=True,
-    unique=True,
-    fragment=True,
-    skillGem=True,
+    currency=False,
+    unique=False,
+    fragment=False,
+    skillGem=False,
 ):
     divination_card_table = Table("DivinationCard")
     currency_table = Table("Currency")
@@ -173,4 +173,4 @@ def calculate_divination_card_difference(
     return results
 
 
-# calculate_divination_card_difference()
+# print(calculate_divination_card_difference(currency=True))

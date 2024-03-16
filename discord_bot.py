@@ -9,6 +9,7 @@ from discord import app_commands
 # Variables
 server_id = 696033204179697795
 max_string_length = 2000
+guild = discord.Object(id=server_id)
 
 # ENV
 env_path = join(dirname(__file__), ".env")
@@ -40,13 +41,6 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-commands = {
-    "$divinationcards_currency",
-    "$divinationcards_uniques",
-    "$divinationcards_fragments",
-    "$divinationcards_skillgems",
-}
-
 async def process_chunks(input_string, chunk_size, processing_function):
     chunks = "\n".join(input_string).split("\n")
     current_chunk = ""
@@ -63,52 +57,63 @@ async def process_chunks(input_string, chunk_size, processing_function):
             current_chunk[:-1]
         )  # Process the last chunk without the trailing "|"
 
-# Add the guild ids in which the slash command will appear.
-# If it should be in all, remove the argument, but note that
-# it will take some time (up to an hour) to register the
-# command if it's for all guilds.
+
 @tree.command(
     name="divcards_currency",
     description="Flip currency cards",
-    guild=discord.Object(id=server_id)
+    guild=guild
 )
-async def first_command(ctx):
-    await ctx.response.send_message("Hello!")
-
-    card_data = await calculations.calculate_divination_card_difference(
+async def send(ctx):
+    card_data = calculations.calculate_divination_card_difference(
         currency=True
     )
-    await process_chunks(card_data, max_string_length, ctx.response.send_message)
+    await process_chunks(card_data, max_string_length, ctx.channel.send)
+    await ctx.response.send_message(content='Currency', delete_after=10)
+    await ctx.followup.send('Test followup')
+
+@tree.command(
+    name="divcards_uniques",
+    description="Flip unique cards",
+    guild=guild
+)
+async def send(ctx):
+    card_data = calculations.calculate_divination_card_difference(
+        unique=True
+    )
+    await process_chunks(card_data, max_string_length, ctx.channel.send)
+    await ctx.response.send_message(content='Uniques', delete_after=10)
+    await ctx.followup.send('Test followup')
+
+@tree.command(
+    name="divcards_fragments",
+    description="Flip fragment cards",
+    guild=guild
+)
+async def send(ctx):
+    card_data = calculations.calculate_divination_card_difference(
+        fragment=True
+    )
+    await process_chunks(card_data, max_string_length, ctx.channel.send)
+    await ctx.response.send_message(content='Fragment', delete_after=10)
+    await ctx.followup.send('Test followup')
+
+@tree.command(
+    name="divcards_skillgems",
+    description="Flip Skillgem cards",
+    guild=guild
+)
+async def send(ctx):
+    card_data = calculations.calculate_divination_card_difference(
+        skillGem=True
+    )
+    await process_chunks(card_data, max_string_length, ctx.channel.send)
+    await ctx.response.send_message(content='Skillgems', delete_after=10)
+    await ctx.followup.send('Test followup')
 
 @client.event
 async def on_ready():
     await tree.sync(guild=discord.Object(id=server_id))
     print(f"We have logged in as {client.user}")
-
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-    if message.content.startswith("$divinationcards_currency"):
-        card_data = await calculations.calculate_divination_card_difference(
-            currency=True
-        )
-        await process_chunks(card_data, max_string_length, message.channel.send)
-    if message.content.startswith("$divinationcards_uniques"):
-        card_data = await calculations.calculate_divination_card_difference(unique=True)
-        await process_chunks(card_data, max_string_length, message.channel.send)
-    if message.content.startswith("$divinationcards_fragments"):
-        card_data = await calculations.calculate_divination_card_difference(
-            fragment=True
-        )
-        await process_chunks(card_data, max_string_length, message.channel.send)
-    if message.content.startswith("$divinationcards_skillGems"):
-        card_data = await calculations.calculate_divination_card_difference(
-            skillGem=False
-        )
-        await process_chunks(card_data, max_string_length, message.channel.send)
 
 
 discord_token = os.environ.get("DISCORD_BOT_TOKEN")

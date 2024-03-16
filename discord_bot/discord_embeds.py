@@ -1,12 +1,14 @@
 # build dynamic embed list
 import discord
 
-import calculations
+from helpers import calculations
 
 max_string_length = 2000
 
 
-def process_chunks(input_string, ctx, chunk_size=max_string_length, card_type="Divination Card"):
+def process_chunks(
+    input_string, ctx, chunk_size=max_string_length, card_type="Divination Card"
+):
     embeds = []
     chunks = "\n".join(input_string).split("\n")
     current_chunk = ""
@@ -17,26 +19,34 @@ def process_chunks(input_string, ctx, chunk_size=max_string_length, card_type="D
         if len(current_chunk) + len(chunk) + 1 <= chunk_size:
             current_chunk += chunk + "\n"
         else:
-            embed = discord.Embed(title=title,
-                                  description=current_chunk[:-1],
-                                  color=discord.Color.blue(),
-                                  url="https://upload.wikimedia.org/wikipedia/en/0/08/Path_of_Exile_Logo.png?20171206230851"
-                                  )
+            embed = discord.Embed(
+                title=title,
+                description=current_chunk[:-1],
+                color=discord.Color.blue(),
+                url="https://upload.wikimedia.org/wikipedia/en/0/08/Path_of_Exile_Logo.png?20171206230851",
+            )
             embed.set_thumbnail(url="images/poe_logo.png")
-            embed.set_footer(text="Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.")
+            embed.set_footer(
+                text="Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet."
+            )
             embeds.append(embed)
             current_chunk_number += 1
 
             current_chunk = chunk + "\n"
 
     if current_chunk:
-        embed = discord.Embed(title=title,
-                              description=current_chunk[:-1],
-                              color=discord.Color.blue(),
-                              url="https://poe.ninja/"
-                              )
-        embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/en/0/08/Path_of_Exile_Logo.png?20171206230851")
-        embed.set_footer(text="Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.")
+        embed = discord.Embed(
+            title=title,
+            description=current_chunk[:-1],
+            color=discord.Color.blue(),
+            url="https://poe.ninja/",
+        )
+        embed.set_thumbnail(
+            url="https://upload.wikimedia.org/wikipedia/en/0/08/Path_of_Exile_Logo.png?20171206230851"
+        )
+        embed.set_footer(
+            text="Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet."
+        )
         embeds.append(embed)
         current_chunk_number += 1
     return embeds

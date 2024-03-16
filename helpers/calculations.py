@@ -1,9 +1,9 @@
 import sqlite3
 from pypika import Query, Table
-import poe_types
+from database import poe_types
 
 # Establish a connection to the SQLite database
-con = sqlite3.connect("poeflipper.db")
+con = sqlite3.connect("../poeflipper.db")
 db = con.cursor()
 
 
@@ -48,6 +48,7 @@ def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
             return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: ***{profit}c***"
         else:
             return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: {profit}"
+
 
 # Method to perform SQL queries
 def sql_query(

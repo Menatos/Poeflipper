@@ -4,12 +4,21 @@ import logging.handlers
 import calculations
 from dotenv import load_dotenv
 from os.path import join, dirname
+from discord import app_commands
+
+import discord_embeds
+from discord_embeds import process_chunks
+
+# Variables
+server_id = 696033204179697795
+guild = discord.Object(id=server_id)
 
 # ENV
 env_path = join(dirname(__file__), ".env")
 load_dotenv(env_path)
 
 # DISCORD LOGGING HANDLER
+os.makedirs("logs", exist_ok=True)
 logger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
 logging.getLogger("discord.http").setLevel(logging.INFO)
@@ -32,62 +41,48 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
-
-commands = {
-    "$divinationcards_currency",
-    "$divinationcards_uniques",
-    "$divinationcards_fragments",
-    "$divinationcards_skillgems",
-}
+tree = app_commands.CommandTree(client)
 
 
-async def process_chunks(input_string, chunk_size, processing_function):
-    chunks = "\n".join(input_string).split("\n")
-    current_chunk = ""
+@tree.command(
+    name="divcards_currency",
+    description="Flip currency cards",
+    guild=guild
+)
+async def send(ctx):
+    await discord_embeds.div_embed(ctx=ctx, Currency=True)
 
-    for chunk in chunks:
-        if len(current_chunk) + len(chunk) + 1 <= chunk_size:
-            current_chunk += chunk + "\n"
-        else:
-            await processing_function(current_chunk[:-1])  # Remove the trailing "|"
-            current_chunk = chunk + "\n"
 
-    if current_chunk:
-        await processing_function(
-            current_chunk[:-1]
-        )  # Process the last chunk without the trailing "|"
+@tree.command(
+    name="divcards_uniques",
+    description="Flip unique cards",
+    guild=guild
+)
+async def send(ctx):
+    await discord_embeds.div_embed(ctx=ctx, Unique=True)
 
+
+@tree.command(
+    name="divcards_fragments",
+    description="Flip fragment cards",
+    guild=guild
+)
+async def send(ctx):
+    await discord_embeds.div_embed(ctx=ctx, Fragment=True)
+
+
+@tree.command(
+    name="divcards_skillgems",
+    description="Flip skillgem cards",
+    guild=guild
+)
+async def send(ctx):
+    await discord_embeds.div_embed(ctx=ctx, SkillGem=True)
 
 @client.event
 async def on_ready():
+    await tree.sync(guild=discord.Object(id=server_id))
     print(f"We have logged in as {client.user}")
-
-
-@client.event
-async def on_message(message):
-    max_string_length = 2000
-
-    if message.author == client.user:
-        return
-
-    if message.content.startswith("$divinationcards_currency"):
-        card_data = await calculations.calculate_divination_card_difference(
-            currency=True
-        )
-        await process_chunks(card_data, max_string_length, message.channel.send)
-    if message.content.startswith("$divinationcards_uniques"):
-        card_data = await calculations.calculate_divination_card_difference(unique=True)
-        await process_chunks(card_data, max_string_length, message.channel.send)
-    if message.content.startswith("$divinationcards_fragments"):
-        card_data = await calculations.calculate_divination_card_difference(
-            fragment=True
-        )
-        await process_chunks(card_data, max_string_length, message.channel.send)
-    if message.content.startswith("$divinationcards_skillGems"):
-        card_data = await calculations.calculate_divination_card_difference(
-            skillGem=False
-        )
-        await process_chunks(card_data, max_string_length, message.channel.send)
 
 
 discord_token = os.environ.get("DISCORD_BOT_TOKEN")

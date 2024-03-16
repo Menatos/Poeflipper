@@ -73,6 +73,7 @@ def send_request(overview, type):
     except requests.RequestException as e:
         print(f"Request failed: {e}")
 
+
 # DISCORD Functions statt messages
 # Omens
 # Alert bei Preisänderung

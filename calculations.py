@@ -158,7 +158,8 @@ def calculate_divination_card_difference(
 
     return results
 
-def alert_on_price_change():
+
+def alert_on_price_change(price_change=100):
     table_specs = poe_types.table_specs
     prices_higher = []
     prices_lower = []
@@ -170,26 +171,46 @@ def alert_on_price_change():
         # Create a query using the PyPika library
         q = (
             Query.from_(current_table)
-            .select(
-                "name",
-                "chaosValue",
-                "sparkline"
-            )
+            .select("name", "chaosValue", "sparkline")
+            .where(current_table.listingCount >= 200)
         )
+
+        if table_name == "Currency" or table_name == "Fragment":
+            q = (
+                Query.from_(current_table)
+                .select("name", "chaosValue", "paySparkline")
+                .where(current_table.listingCount >= 200)
+            )
 
         # Execute the query and fetch results
         data = db.execute(str(q)).fetchall()
 
-        print(data)
-
         for item in data:
             name = item[0]
             value = item[1]
-            sparkline = item[2].replace("'", '"')
+            sparkline = json.loads(item[2].replace("'", '"').replace("None", "0"))
+            total_change = sparkline["totalChange"]
 
-            print(item)
-            # print(name)
-            # print(sparkline)
+            if total_change >= price_change:
+                prices_higher.append(
+                    {
+                        "name": name,
+                        "value": value,
+                        "total_change": total_change,
+                        "type": table_name,
+                    }
+                )
+            if total_change <= -price_change:
+                prices_lower.append(
+                    {
+                        "name": name,
+                        "value": value,
+                        "total_change": total_change,
+                        "type": table_name,
+                    }
+                )
+
+        return prices_higher, prices_lower
 
 
 # Run the main function
@@ -199,4 +220,3 @@ alert_on_price_change()
 # 10 kennen
 # hintergrundgeschichte
 # wortlaut kurzversion
-

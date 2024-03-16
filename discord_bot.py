@@ -6,9 +6,11 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 from discord import app_commands
 
+import discord_embeds
+from discord_embeds import process_chunks
+
 # Variables
 server_id = 696033204179697795
-max_string_length = 2000
 guild = discord.Object(id=server_id)
 
 # ENV
@@ -41,22 +43,6 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-async def process_chunks(input_string, chunk_size, processing_function):
-    chunks = "\n".join(input_string).split("\n")
-    current_chunk = ""
-
-    for chunk in chunks:
-        if len(current_chunk) + len(chunk) + 1 <= chunk_size:
-            current_chunk += chunk + "\n"
-        else:
-            await processing_function(current_chunk[:-1])  # Remove the trailing "|"
-            current_chunk = chunk + "\n"
-
-    if current_chunk:
-        await processing_function(
-            current_chunk[:-1]
-        )  # Process the last chunk without the trailing "|"
-
 
 @tree.command(
     name="divcards_currency",
@@ -64,12 +50,8 @@ async def process_chunks(input_string, chunk_size, processing_function):
     guild=guild
 )
 async def send(ctx):
-    card_data = calculations.calculate_divination_card_difference(
-        currency=True
-    )
-    await process_chunks(card_data, max_string_length, ctx.channel.send)
-    await ctx.response.send_message(content='Currency', delete_after=10)
-    await ctx.followup.send('Test followup')
+    await discord_embeds.div_embed(ctx=ctx, Currency=True)
+
 
 @tree.command(
     name="divcards_uniques",
@@ -77,12 +59,8 @@ async def send(ctx):
     guild=guild
 )
 async def send(ctx):
-    card_data = calculations.calculate_divination_card_difference(
-        unique=True
-    )
-    await process_chunks(card_data, max_string_length, ctx.channel.send)
-    await ctx.response.send_message(content='Uniques', delete_after=10)
-    await ctx.followup.send('Test followup')
+    await discord_embeds.div_embed(ctx=ctx, Unique=True)
+
 
 @tree.command(
     name="divcards_fragments",
@@ -90,25 +68,16 @@ async def send(ctx):
     guild=guild
 )
 async def send(ctx):
-    card_data = calculations.calculate_divination_card_difference(
-        fragment=True
-    )
-    await process_chunks(card_data, max_string_length, ctx.channel.send)
-    await ctx.response.send_message(content='Fragment', delete_after=10)
-    await ctx.followup.send('Test followup')
+    await discord_embeds.div_embed(ctx=ctx, Fragment=True)
+
 
 @tree.command(
     name="divcards_skillgems",
-    description="Flip Skillgem cards",
+    description="Flip skillgem cards",
     guild=guild
 )
 async def send(ctx):
-    card_data = calculations.calculate_divination_card_difference(
-        skillGem=True
-    )
-    await process_chunks(card_data, max_string_length, ctx.channel.send)
-    await ctx.response.send_message(content='Skillgems', delete_after=10)
-    await ctx.followup.send('Test followup')
+    await discord_embeds.div_embed(ctx=ctx, SkillGem=True)
 
 @client.event
 async def on_ready():

@@ -2,6 +2,7 @@
 import discord
 
 from helpers import calculations
+from helpers import last_run as lr
 
 max_string_length = 2000
 
@@ -13,6 +14,8 @@ def process_chunks(
     chunks = "\n".join(input_string).split("\n")
     current_chunk = ""
     current_chunk_number = 1
+
+    last_run = lr.get_last_run_time_stamp().strftime("%d.%m.%y %H:%M:%S")
 
     for chunk in chunks:
         title = card_type + " " + str(current_chunk_number)
@@ -27,7 +30,7 @@ def process_chunks(
             )
             embed.set_thumbnail(url="images/poe_logo.png")
             embed.set_footer(
-                text="Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet."
+                text= f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet. Letzte Aktualisierung der Daten: {last_run}"
             )
             embeds.append(embed)
             current_chunk_number += 1
@@ -45,7 +48,7 @@ def process_chunks(
             url="https://upload.wikimedia.org/wikipedia/en/0/08/Path_of_Exile_Logo.png?20171206230851"
         )
         embed.set_footer(
-            text="Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet."
+            text= f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet. Letzte Aktualisierung der Daten: {last_run}"
         )
         embeds.append(embed)
         current_chunk_number += 1

@@ -19,24 +19,27 @@ message = client.messages.create(
     model="claude-3-haiku-20240307",
     max_tokens=1000,
     temperature=0.0,
-#   system="Respond only in Yoda-speak.",
+    #   system="Respond only in Yoda-speak.",
     messages=[
-        {"role": "user", "content": "Write me a python function that allows me to upload a csv for you to analyze"}
-    ]
+        {
+            "role": "user",
+            "content": "Write me a python function that allows me to upload a csv for you to analyze",
+        }
+    ],
 )
 
 print(message)
 
 message_data = {
-    'id': message.id,
-    'content_text': message.content[0].text,
-    'content_type': message.content[0].type,
-    'model': message.model,
-    'role': message.role,
-    'stop_reason': message.stop_reason,
-    'stop_sequence': message.stop_sequence,
-    'type': message.type,
-    'usage': str(message.usage),
+    "id": message.id,
+    "content_text": message.content[0].text,
+    "content_type": message.content[0].type,
+    "model": message.model,
+    "role": message.role,
+    "stop_reason": message.stop_reason,
+    "stop_sequence": message.stop_sequence,
+    "type": message.type,
+    "usage": str(message.usage),
 }
 log.log_json(message_data, "logs/prompts.log")
 log.log_json(message_data["content_text"], "logs/answers.log")

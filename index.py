@@ -6,6 +6,7 @@ import requests
 from database import poe_types
 
 league_start = ""
+version = "1.0"
 
 item_types = poe_types.item_types
 reward_Types = poe_types.reward_types

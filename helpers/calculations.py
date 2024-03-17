@@ -46,11 +46,11 @@ def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
         print(profitable_card)
         print(profit_from_card)
         if profit / card_amount >= 50:
-            return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: __***{profit}c***__"
+            return f"> {card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: __***{profit}c***__"
         if profit / card_amount >= 25:
-            return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: ***{profit}c***"
+            return f"> {card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: ***{profit}c***"
         else:
-            return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: {profit}c"
+            return f"> {card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: {profit}c"
 
 
 # Method to perform SQL queries
@@ -173,7 +173,9 @@ def calculate_price_change(price_change=30):
     table_specs = poe_types.table_specs
     price_changes = {}
 
-    for table_spec in [t for t in table_specs if t["name"] != "ItemList" and t["name"] != "BaseType"]:
+    for table_spec in [
+        t for t in table_specs if t["name"] != "ItemList" and t["name"] != "BaseType"
+    ]:
         table_name = table_spec["name"]
         current_table = Table(table_name)
         price_changes[table_name] = []
@@ -203,7 +205,9 @@ def calculate_price_change(price_change=30):
             sparkline = json.loads(item[2].replace("'", '"').replace("None", "0"))
             total_change = sparkline["totalChange"]
 
-            if ((total_change >= price_change or total_change <= -price_change) and value >= 10):
+            if (
+                total_change >= price_change or total_change <= -price_change
+            ) and value >= 10:
                 price_changes[table_name].append(
                     {
                         "name": name,
@@ -213,10 +217,13 @@ def calculate_price_change(price_change=30):
                     }
                 )
 
-        price_changes[table_name] = sorted(price_changes[table_name], key=lambda x: (x['total_change'], x['value']), reverse=True)
+        price_changes[table_name] = sorted(
+            price_changes[table_name],
+            key=lambda x: (x["total_change"], x["value"]),
+            reverse=True,
+        )
 
     return price_changes
-
 
 
 # Run the main function

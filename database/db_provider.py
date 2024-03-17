@@ -7,10 +7,11 @@ from pypika import Query, Table
 
 # Import custom modules
 import index
-import poe_types
+from database import poe_types
+import helpers.last_run as lr
 
 # Connect to the SQLite database
-con = sqlite3.connect("poeflipper.db")
+con = sqlite3.connect("../poeflipper.db")
 db = con.cursor()
 ItemList = "ItemList"
 
@@ -169,6 +170,8 @@ def refresh_db_values():
             )["lines"]
 
         insert_into_db(response, table_spec, table_name, current_table, item_list_table)
+
+    lr.save_last_run_time_stamp()
 
 
 # Create database tables and refresh values

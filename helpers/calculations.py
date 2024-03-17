@@ -1,10 +1,10 @@
 import json
 import sqlite3
 from pypika import Query, Table
-import poe_types
+from database import poe_types
 
 # Establish a connection to the SQLite database
-con = sqlite3.connect("poeflipper.db")
+con = sqlite3.connect("../poeflipper.db")
 db = con.cursor()
 
 
@@ -13,8 +13,8 @@ db = con.cursor()
 def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
     # Unpack card information
     card_name = cards[0]
-    card_amount = int(cards[1])
-    card_value = float(cards[2])
+    card_amount = int(cards[2])
+    card_value = float(cards[1])
     card_cost = card_amount * price_offset * card_value
     reward_name = cards[4]
     reward_amount = int(cards[3])
@@ -43,7 +43,12 @@ def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
         profit_from_card = (f"{poe_types.GREEN}Profit:", profit, f"{poe_types.RESET}")
         print(profitable_card)
         print(profit_from_card)
-        return f"{card_name} >> {int(cards[3])} {cards[4]} >> {profit}c"
+        if profit / card_amount >= 50:
+            return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: __***{profit}c***__"
+        if profit / card_amount >= 25:
+            return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: ***{profit}c***"
+        else:
+            return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: {profit}"
 
 
 # Method to perform SQL queries
@@ -56,13 +61,14 @@ def sql_query(
         .join(sub_table)
         .on(main_table.reward == sub_table.name)
         .select(
-            "name",
+            main_table.name,
             "chaosValue",
             "stackSize",
             "rewardAmount",
             sub_table.name,
             getattr(sub_table, reward_cost),
         )
+        .groupby(main_table.name)
     )
 
     if "Uniques" in str(sub_table):
@@ -88,10 +94,10 @@ def calculate_divination_card_difference(
     min_profit=10,
     max_profit=5000,
     price_off_set=1.0,
-    currency=True,
-    unique=True,
-    fragment=True,
-    skillGem=True,
+    Currency=False,
+    Unique=False,
+    Fragment=False,
+    SkillGem=False,
 ):
     divination_card_table = Table("DivinationCard")
     currency_table = Table("Currency")
@@ -105,7 +111,7 @@ def calculate_divination_card_difference(
     print(
         f"{poe_types.BLUE}CURRENCY ---------------------------------------------------------{poe_types.RESET}"
     )
-    if currency:
+    if Currency:
         currency_cards = sql_query(
             divination_card_table, currency_table, "chaosEquivalent"
         )
@@ -118,7 +124,7 @@ def calculate_divination_card_difference(
     print(
         f"{poe_types.BLUE}UNIQUES ----------------------------------------------------------{poe_types.RESET}"
     )
-    if unique:
+    if Unique:
         unique_cards = sql_query(
             divination_card_table, uniques_table, "chaosValue", True
         )
@@ -131,7 +137,7 @@ def calculate_divination_card_difference(
     print(
         f"{poe_types.BLUE}FRAGMENT ---------------------------------------------------------{poe_types.RESET}"
     )
-    if fragment:
+    if Fragment:
         fragment_cards = sql_query(
             divination_card_table, fragment_table, "chaosEquivalent"
         )
@@ -144,7 +150,7 @@ def calculate_divination_card_difference(
     print(
         f"{poe_types.BLUE}SKILL GEMS -----------------------------------------------------{poe_types.RESET}"
     )
-    if skillGem:
+    if SkillGem:
         card_type = "skillGem"
         skillGem_cards = sql_query(
             divination_card_table, skillGem_table, "chaosValue", False, True

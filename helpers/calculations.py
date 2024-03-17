@@ -1,5 +1,7 @@
 import json
 import sqlite3
+from pprint import pprint
+
 from pypika import Query, Table
 from database import poe_types
 
@@ -48,7 +50,7 @@ def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
         if profit / card_amount >= 25:
             return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: ***{profit}c***"
         else:
-            return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: {profit}"
+            return f"{card_name} > {card_amount} cards > {reward_amount} {reward_name} > Profit: {profit}c"
 
 
 # Method to perform SQL queries
@@ -86,6 +88,8 @@ def sql_query(
 
     # Execute the query and fetch results
     cards = db.execute(str(q)).fetchall()
+    cards = sorted(cards, key=lambda x: x[1], reverse=True)
+
     return cards
 
 
@@ -165,28 +169,30 @@ def calculate_divination_card_difference(
     return results
 
 
-def alert_on_price_change(price_change=100):
+def calculate_price_change(price_change=30):
     table_specs = poe_types.table_specs
-    prices_higher = []
-    prices_lower = []
+    price_changes = {}
 
-    for table_spec in [t for t in table_specs if t["name"] != "ItemList"]:
+    for table_spec in [t for t in table_specs if t["name"] != "ItemList" and t["name"] != "BaseType"]:
         table_name = table_spec["name"]
         current_table = Table(table_name)
+        price_changes[table_name] = []
 
         # Create a query using the PyPika library
         q = (
             Query.from_(current_table)
             .select("name", "chaosValue", "sparkline")
-            .where(current_table.listingCount >= 200)
+            .where(current_table.listingCount >= 50)
         )
 
         if table_name == "Currency" or table_name == "Fragment":
             q = (
                 Query.from_(current_table)
-                .select("name", "chaosValue", "paySparkline")
+                .select("name", "chaosEquivalent", "paySparkline")
                 .where(current_table.listingCount >= 200)
             )
+
+        q = q.groupby("name")
 
         # Execute the query and fetch results
         data = db.execute(str(q)).fetchall()
@@ -197,17 +203,8 @@ def alert_on_price_change(price_change=100):
             sparkline = json.loads(item[2].replace("'", '"').replace("None", "0"))
             total_change = sparkline["totalChange"]
 
-            if total_change >= price_change:
-                prices_higher.append(
-                    {
-                        "name": name,
-                        "value": value,
-                        "total_change": total_change,
-                        "type": table_name,
-                    }
-                )
-            if total_change <= -price_change:
-                prices_lower.append(
+            if ((total_change >= price_change or total_change <= -price_change) and value >= 10):
+                price_changes[table_name].append(
                     {
                         "name": name,
                         "value": value,
@@ -216,12 +213,16 @@ def alert_on_price_change(price_change=100):
                     }
                 )
 
-        return prices_higher, prices_lower
+        price_changes[table_name] = sorted(price_changes[table_name], key=lambda x: (x['total_change'], x['value']), reverse=True)
+
+    return price_changes
+
 
 
 # Run the main function
 # calculate_divination_card_difference()
-alert_on_price_change()
+# calculate_divination_card_difference(Currency=True)
+# calculate_price_change()
 
 # 10 kennen
 # hintergrundgeschichte

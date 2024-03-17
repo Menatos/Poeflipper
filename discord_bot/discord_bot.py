@@ -61,6 +61,10 @@ async def send(ctx):
 async def send(ctx):
     await discord_embeds.div_embed(ctx=ctx, SkillGem=True)
 
+@tree.command(name="price_changes", description="Show all items which prices have changed more than 30%", guild=guild)
+async def send(ctx):
+    await discord_embeds.price_change_embed(ctx=ctx)
+
 
 @client.event
 async def on_ready():

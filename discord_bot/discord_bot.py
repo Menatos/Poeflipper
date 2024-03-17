@@ -1,3 +1,5 @@
+import threading
+
 import discord
 import os
 import logging.handlers
@@ -6,10 +8,13 @@ from os.path import join, dirname
 from discord import app_commands
 
 import discord_embeds
+from database.db_provider import create_db_tables, refresh_db_values
+from helpers import last_run as lr
 
 # Variables
 server_id = 696033204179697795
 guild = discord.Object(id=server_id)
+timestamp = lr.get_last_run_time_stamp()
 
 # ENV
 env_path = join(dirname(__file__), "../.env")
@@ -42,28 +47,44 @@ client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
 
-@tree.command(name="divcards_currency", description="Flip currency cards", guild=guild)
+@tree.command(name="divcards_currency",
+              description="Show all currency divination cards which can be profitably flipped", guild=guild)
 async def send(ctx):
     await discord_embeds.div_embed(ctx=ctx, Currency=True)
 
 
-@tree.command(name="divcards_uniques", description="Flip unique cards", guild=guild)
+@tree.command(name="divcards_uniques", description="Show all unique divination cards which can be profitably flipped",
+              guild=guild)
 async def send(ctx):
     await discord_embeds.div_embed(ctx=ctx, Unique=True)
 
 
-@tree.command(name="divcards_fragments", description="Flip fragment cards", guild=guild)
+@tree.command(name="divcards_fragments",
+              description="Show all fragment divination cards which can be profitably flipped", guild=guild)
 async def send(ctx):
     await discord_embeds.div_embed(ctx=ctx, Fragment=True)
 
 
-@tree.command(name="divcards_skillgems", description="Flip skillgem cards", guild=guild)
+@tree.command(name="divcards_skillgems",
+              description="Show all skillgem divination cards which can be profitably flipped", guild=guild)
 async def send(ctx):
     await discord_embeds.div_embed(ctx=ctx, SkillGem=True)
+
 
 @tree.command(name="price_changes", description="Show all items which prices have changed more than 30%", guild=guild)
 async def send(ctx):
     await discord_embeds.price_change_embed(ctx=ctx)
+
+
+@tree.command(name="refresh_database", description="Refresh poe.ninja data", guild=guild)
+async def send(ctx):
+
+    try:
+        await ctx.response.send_message(content="Refreshing poe.ninja data... please wait", delete_after=45)
+        create_db_tables()
+        refresh_db_values()
+    except:
+        await ctx.response.send_message(content="Error refreshing data. Please contact @felgae or @menatos")
 
 
 @client.event

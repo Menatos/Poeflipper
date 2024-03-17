@@ -172,8 +172,9 @@ def refresh_db_values():
         insert_into_db(response, table_spec, table_name, current_table, item_list_table)
 
     lr.save_last_run_time_stamp()
+    return
 
 
 # Create database tables and refresh values
-create_db_tables()
-refresh_db_values()
+# create_db_tables()
+# refresh_db_values()

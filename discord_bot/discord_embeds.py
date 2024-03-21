@@ -216,41 +216,20 @@ async def refresh_embed(ctx):
 async def help_embed(ctx):
     embed = base_embed
     embed["title"] = "Was kann Poeflipper?"
-    embed["description"] = (
-        "Es werden grundsätzlich Items ausgefiltert, bei welchen nur wenige Exemplare auf dem Markt sind. Folgende Funktionen sind aktuell verfügbar:"
-    )
+    embed["description"] = ("Es werden grundsätzlich Items ausgefiltert, bei welchen nur wenige Exemplare auf dem Markt sind. Folgende Funktionen sind aktuell verfügbar:")
 
     embed = Embed.from_dict(embed)
 
-    embed.add_field(
-        name="/divcards_currency",
-        value="```Der Wert der divinationcard rewards wird mit den Kosten verglichen.```",
-        inline=False,
-    )
-    embed.add_field(
-        name="/divcards_uniques",
-        value="```Der Wert der divinationcard rewards wird mit den Kosten verglichen. Dabei werden Links oder das Map-Tier berücksichtigt```",
-        inline=False,
-    )
-    embed.add_field(
-        name="/divcards_fragments",
-        value="```Der Wert der divinationcard rewards wird mit den Kosten verglichen.```",
-        inline=False,
-    )
-    embed.add_field(
-        name="/divcards_skillgems",
-        value="```Der Wert der divinationcard reward wird mit den Kosten verglichen. Gemlevel, Korruption und Qualität werden berücksichtigt.```",
-        inline=False,
-    )
-    embed.add_field(
-        name="/price_changes",
-        value="```Für jede Itemkategorie werden die Preisänderungen der letzten 7 Tage angezeigt, wenn sie größer als 30% sind und das Item mehr als 10 Chaos kostet. Besonders starke Veränderungen in beide Richtungen werden markiert.```",
-        inline=False,
-    )
-    embed.add_field(
-        name="/refresh_database",
-        value="```Lädt die Datenbank mit neuen Daten. Standardmäßig geschieht dies automatisch alle 30 Minuten.```",
-        inline=False,
-    )
+    fields = [
+        ("/divcards_currency", "Der Wert der divinationcard rewards wird mit den Kosten verglichen."),
+        ("/divcards_uniques", "Der Wert der divinationcard rewards wird mit den Kosten verglichen. Dabei werden Links oder das Map-Tier berücksichtigt"),
+        ("/divcards_fragments", "Der Wert der divinationcard rewards wird mit den Kosten verglichen."),
+        ("/divcards_skillgems","Der Wert der divinationcard reward wird mit den Kosten verglichen. Gemlevel, Korruption und Qualität werden berücksichtigt."),
+        ("/price_changes","Für jede Itemkategorie werden die Preisänderungen der letzten 7 Tage angezeigt, wenn sie größer als 30% sind und das Item mehr als 10 Chaos kostet. Besonders starke Veränderungen in beide Richtungen werden markiert."),
+        ("/refresh_database","Lädt die Datenbank mit neuen Daten. Standardmäßig geschieht dies automatisch alle 30 Minuten.")
+    ]
+
+    for name, value in fields:
+        embed.add_field(name=name, value=f"```{value}```", inline=False)
 
     await ctx.response.send_message(embed=embed)

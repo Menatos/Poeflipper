@@ -9,7 +9,7 @@ def get_last_run_time_stamp():
         with open("../logs/last_run.log", mode="r") as file:
             lines = file.readlines()
             if lines:
-                return datetime.datetime.strptime(lines[-1].strip(), fmt)
+                return datetime.datetime.strptime(str(lines[-1].rsplit(" ", 1)[0]).strip(), fmt)
             else:
                 return datetime.datetime.now().strftime(fmt)
     except FileNotFoundError:
@@ -17,8 +17,8 @@ def get_last_run_time_stamp():
         return datetime.datetime.now().strftime(fmt)
 
 
-def save_last_run_time_stamp():
+def save_last_run_time_stamp(prefix='unknown'):
     # Update the script execution time and save it to the log file
     with open("../logs/last_run.log", mode="a") as file:  # Use "a" for append mode
-        current_timestamp = datetime.datetime.now().strftime(fmt)
+        current_timestamp = datetime.datetime.now().strftime(fmt) + " " + prefix
         file.write(current_timestamp + "\n")  # Write current timestamp to a new line

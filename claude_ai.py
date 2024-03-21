@@ -42,4 +42,3 @@ message_data = {
     "usage": str(message.usage),
 }
 log.log_json(message_data, "logs/prompts.log")
-log.log_json(message_data["content_text"], "logs/answers.log")

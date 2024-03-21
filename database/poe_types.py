@@ -23,6 +23,25 @@ item_types = {
     "Memory": "itemoverview",
 }
 
+price_history_types = [
+    "Currency",
+    "Fragment",
+    "Oil",
+    "Incubator",
+    "Scarab",
+    "Fossil",
+    "Resonator",
+    "Essence",
+    "DivinationCard",
+    "SkillGem",
+    "Uniques",
+    "BaseType",
+    "Artifact",
+    "DeliriumOrb",
+    "Invitation",
+    "Memory",
+]
+
 reward_types = [
     "currencyitem",
     "uniqueitem",
@@ -237,12 +256,24 @@ table_specs = [
             {"name": "sparkline", "type": "NUMERIC"},
         ],
     },
+]
+
+misc_table_specs = [
     {
         "name": "ItemList",
         "fields": [
             {"name": "id", "type": "INTEGER"},
             {"name": "name", "type": "TEXT"},
             {"name": "table_name", "type": "TEXT"},
+            {"name": "item_type", "type": "TEXT"},
+        ],
+    },
+    {
+        "name": "PriceHistory",
+        "fields": [
+            {"name": "id", "type": "INTEGER"},
+            {"name": "old_league_prices", "type": "TEXT"},
+            {"name": "new_league_prices", "type": "TEXT"},
         ],
     },
 ]

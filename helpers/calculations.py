@@ -174,7 +174,7 @@ def calculate_price_change(price_change=30):
     price_changes = {}
 
     for table_spec in [
-        t for t in table_specs if t["name"] != "ItemList" and t["name"] != "BaseType"
+        t for t in table_specs if t["name"] != "BaseType"
     ]:
         table_name = table_spec["name"]
         current_table = Table(table_name)

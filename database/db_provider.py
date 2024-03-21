@@ -20,6 +20,7 @@ item_types = poe_types.item_types
 reward_types = poe_types.reward_types
 unique_types = poe_types.unique_types
 table_specs = poe_types.table_specs
+misc_table_specs = poe_types.misc_table_specs
 
 
 # Check if a field is present in a given table specification
@@ -35,11 +36,16 @@ def create_db_tables():
         field_string = ", ".join(f"{field['name']} {field['type']}" for field in fields)
         return field_string
 
-    # Iterate over table specifications and create tables
-    for table_spec in table_specs:
+    def create_table(table_spec):
         create_table_query = f"CREATE TABLE IF NOT EXISTS {table_spec['name']}({generate_field_string(table_spec['fields'])})"
         db.execute(create_table_query)
 
+    # Iterate over table specifications and create tables
+    for table_spec in table_specs:
+        create_table(table_spec)
+    # Create misc_tables
+    for table_spec in misc_table_specs:
+        create_table(table_spec)
 
 # Map values from the received JSON object to the corresponding fields in the database
 def map_values(obj, type=""):
@@ -109,7 +115,7 @@ def map_values(obj, type=""):
 
 
 # Insert values into the database tables based on the received response and table specifications
-def insert_into_db(response, table_spec, table_name, current_table, item_list_table):
+def insert_into_db(response, table_spec, table_name, current_table, item_list_table, item_type=None):
     for obj in response:
         values = map_values(obj, table_name)
         values_mapped = []
@@ -122,7 +128,7 @@ def insert_into_db(response, table_spec, table_name, current_table, item_list_ta
         q = Query.into(current_table).insert(values_mapped)
 
         q_index = Query.into(item_list_table).insert(
-            values["id"], values["name"], table_name
+            values["id"], values["name"], table_name, item_type
         )
 
         # Do not import relic uniques, they throw off the values
@@ -145,7 +151,7 @@ def refresh_db_values():
     item_list_table = Table(ItemList)
 
     # Iterate over table specifications excluding ItemList
-    for table_spec in [t for t in table_specs if t["name"] != "ItemList"]:
+    for table_spec in table_specs:
         table_name = table_spec["name"]
 
         # Delete all records from the current table
@@ -159,7 +165,7 @@ def refresh_db_values():
                     index.send_request(unique_types[unique_type], unique_type)
                 )["lines"]
                 insert_into_db(
-                    response, table_spec, table_name, current_table, item_list_table
+                    response, table_spec, table_name, current_table, item_list_table, unique_type
                 )
         else:
             response = json.loads(
@@ -168,13 +174,18 @@ def refresh_db_values():
                     table_name,
                 )
             )["lines"]
+            insert_into_db(response, table_spec, table_name, current_table, item_list_table)
 
-        insert_into_db(response, table_spec, table_name, current_table, item_list_table)
+    lr.save_last_run_time_stamp(prefix="refresh_db_values")
+    return
 
-    lr.save_last_run_time_stamp()
+
+def refresh_price_history():
+    print('Refreshing price history')
+    lr.save_last_run_time_stamp(prefix="price_history")
     return
 
 
 # Create database tables and refresh values
-# create_db_tables()
-# refresh_db_values()
+create_db_tables()
+refresh_db_values()

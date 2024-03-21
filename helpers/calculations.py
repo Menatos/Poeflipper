@@ -2,8 +2,10 @@ import json
 import sqlite3
 from pprint import pprint
 
-from pypika import Query, Table
+from pypika import Query, Table, Parameter
 from database import poe_types
+from database.db_provider import refresh_price_history
+from index import leagues
 
 # Establish a connection to the SQLite database
 con = sqlite3.connect("../poeflipper.db")
@@ -225,6 +227,37 @@ def calculate_price_change(price_change=30):
 
     return price_changes
 
+def predict_future_price(item_name):
+    print("Predicting future prices")
+
+    item_name = f"%{item_name}%"
+
+    refresh_price_history(item_name, leagues[0])
+
+    price_history_table = Table("PriceHistory")
+
+    q = (
+        Query.from_(price_history_table)
+        .select('*')
+        .where(price_history_table.name.like(Parameter('?')))
+    )
+
+    response = db.execute(str(q), (item_name,)).fetchall()
+
+    for item in response:
+        item_id = item[0]
+        item_name = item[1]
+        if item[2]:
+            old_league_prices = json.loads(item[2].replace("'", '"'))
+        else:
+            old_league_prices = None
+        if item[3]:
+            new_league_prices = json.loads(item[3].replace("'", '"'))
+        else:
+            new_league_prices = None
+        print(f"{item_name} - {item_id} - {old_league_prices} - {new_league_prices}")
+
+
 
 # Run the main function
 # calculate_divination_card_difference()
@@ -234,3 +267,5 @@ def calculate_price_change(price_change=30):
 # 10 kennen
 # hintergrundgeschichte
 # wortlaut kurzversion
+
+predict_future_price("chaos")

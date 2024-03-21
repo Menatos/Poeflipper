@@ -1,12 +1,15 @@
 # This is the backbone of the application. this class is used to send api requests to the poe.ninja
 # site and retrieve the answer.
+from datetime import date
 
 import requests
 
 from database import poe_types
 
-league_start = ""
+league_start = date(2024, 3, 29)
+current_league_day = date.today() - league_start
 version = "1.0"
+
 
 item_types = poe_types.item_types
 reward_Types = poe_types.reward_types
@@ -73,3 +76,30 @@ def send_request(overview, type):
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
+
+
+def send_price_history_request(history, league, item_type, item_id):
+
+    if history == "currencyhistory":
+        id_type = "currencyId"
+    else:
+        id_type = "itemId"
+
+    api_url = f"https://poe.ninja/api/data/{history}?league={league}&type={item_type}&{id_type}={item_id}"
+
+    try:
+        # Send GET request to the API
+        response = requests.get(api_url)
+
+        # Check if the request was successful (status code 200)
+        if response.status_code == 200:
+            # Save the raw response content in a variable
+            api_response = response.content.decode("utf-8")
+            return api_response
+        else:
+            print(f"Error: {response.status_code} - {response.text}")
+            print(f"Request URL: {api_url}")
+
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+        print(f"Request URL: {api_url}")

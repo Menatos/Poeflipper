@@ -15,7 +15,7 @@ from index import send_price_history_request, leagues, send_request
 from database import poe_types
 
 # Connect to the SQLite database
-con = sqlite3.connect("../poeflipper.db")
+con = sqlite3.connect("poeflipper.db")
 db = con.cursor()
 ItemList = "ItemList"
 PriceHistory = "PriceHistory"

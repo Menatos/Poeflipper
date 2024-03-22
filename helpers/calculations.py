@@ -12,7 +12,7 @@ from database.db_provider import refresh_price_history
 from index import leagues
 
 # Establish a connection to the SQLite database
-con = sqlite3.connect("../poeflipper.db")
+con = sqlite3.connect("poeflipper.db")
 db = con.cursor()
 
 # This method serves as a calculation method to determine the value between the cost of the Divination cards needed

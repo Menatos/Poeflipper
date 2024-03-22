@@ -23,7 +23,7 @@ env_path = join(dirname(__file__), "../.env")
 load_dotenv(env_path)
 
 # DISCORD LOGGING HANDLER
-os.makedirs("../logs", exist_ok=True)
+os.makedirs("logs", exist_ok=True)
 logger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
 logging.getLogger("discord.http").setLevel(logging.INFO)

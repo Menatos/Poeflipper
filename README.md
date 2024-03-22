@@ -12,11 +12,10 @@ add .env with DISCORD_BOT_TOKEN to project folder
 
 sudo bash run.sh
 
---> check running screens with screen -ls
---> attach to screen with screen -r <screenname>
---> detach from screen with ctrl+a+d
+--> check running jobs with jobs -l
+--> check ids with ps -aux
+--> kill running jobs with kill -9 jobid
 
---> wait for the initial setup to finish and invite the discord bot
 
 Github Page:
 

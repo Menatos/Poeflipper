@@ -14,7 +14,7 @@ sudo bash run.sh
 
 --> check running jobs with jobs -l
 --> check ids with ps -aux
---> kill running jobs with kill -9 jobid
+--> kill all running jobs -- pkill -9 -f "python"
 
 
 Github Page:

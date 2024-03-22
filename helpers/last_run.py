@@ -9,10 +9,10 @@ load_dotenv(env_path)
 
 fmt = "%d.%m.%y %H:%M:%S"
 
-if os.environ.get("ENVIRONMENT") == "development":
-    log_path = "../logs/last_run.log"
-else:
+if os.environ.get("ENVIRONMENT") == "production":
     log_path = "logs/last_run.log"
+else:
+    log_path = "../logs/last_run.log"
 
 def get_last_run_time_stamp():
     # Try loading the datetime of the last run from the log file

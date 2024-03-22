@@ -28,12 +28,12 @@ logger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
 logging.getLogger("discord.http").setLevel(logging.INFO)
 
-if os.environ.get("ENVIRONMENT") == "development":
-    log_path = "../logs/discord.log"
-    os.makedirs("../logs", exist_ok=True)
-else:
+if os.environ.get("ENVIRONMENT") == "production":
     log_path = "logs/discord.log"
     os.makedirs("logs", exist_ok=True)
+else:
+    log_path = "../logs/discord.log"
+    os.makedirs("../logs", exist_ok=True)
 
 handler = logging.handlers.RotatingFileHandler(
     filename=log_path,

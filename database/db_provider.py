@@ -22,10 +22,10 @@ from database import poe_types
 env_path = join(dirname(__file__), ".env")
 load_dotenv(env_path)
 
-if os.environ.get("ENVIRONMENT") == "development":
-    db_path = "../poeflipper.db"
-else:
+if os.environ.get("ENVIRONMENT") == "production":
     db_path = "poeflipper.db"
+else:
+    db_path = "../poeflipper.db"
 
 
 con = sqlite3.connect(db_path)
@@ -142,6 +142,10 @@ def map_values(obj, type=""):
 
 # Insert values into the database tables based on the received response and table specifications
 def insert_into_db(response, table_spec, table_name, current_table, item_list_table, item_type=None):
+
+    items_in_price_history = db.execute(f"SELECT id FROM {price_history_table}").fetchall()
+    ids = [x[0] for x in items_in_price_history]
+
     for obj in response["lines"]:
         values = map_values(obj, table_name)
         values_mapped = []
@@ -178,9 +182,7 @@ def insert_into_db(response, table_spec, table_name, current_table, item_list_ta
         db.execute(str(q))
         db.execute(str(q_index))
 
-        item_in_price_history = db.execute(f"SELECT id FROM {price_history_table} WHERE id = {values['id']}").fetchone()
-
-        if not item_in_price_history:
+        if not values["id"] in ids:
             db.execute(str(q_price))
 
         con.commit()
@@ -304,6 +306,6 @@ def refresh_old_league_prices():
     refresh_price_history(league=leagues[1])
 
 # Create database tables and refresh values
-# create_db_tables()
-# refresh_db_values()
+create_db_tables()
+refresh_db_values()
 # refresh_price_history()

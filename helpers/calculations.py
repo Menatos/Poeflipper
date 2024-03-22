@@ -19,10 +19,10 @@ from index import leagues, current_league_day
 env_path = join(dirname(__file__), ".env")
 load_dotenv(env_path)
 
-if os.environ.get("ENVIRONMENT") == "development":
-    db_path = "../poeflipper.db"
-else:
+if os.environ.get("ENVIRONMENT") == "production":
     db_path = "poeflipper.db"
+else:
+    db_path = "../poeflipper.db"
 
 # Establish a connection to the SQLite database
 con = sqlite3.connect(db_path)

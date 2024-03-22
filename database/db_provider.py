@@ -306,6 +306,6 @@ def refresh_old_league_prices():
     refresh_price_history(league=leagues[1])
 
 # Create database tables and refresh values
-create_db_tables()
-refresh_db_values()
+# create_db_tables()
+# refresh_db_values()
 # refresh_price_history()

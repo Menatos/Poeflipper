@@ -16,7 +16,6 @@ from helpers import last_run as lr
 
 # Variables
 server_id = 696033204179697795
-guild = discord.Object(id=server_id)
 timestamp = lr.get_last_run_time_stamp()
 
 # ENV
@@ -53,7 +52,6 @@ tree = app_commands.CommandTree(client)
 @tree.command(
     name="divcards_currency",
     description="Show all currency divination cards which can be profitably flipped",
-    guild=guild,
 )
 async def send(ctx):
     await div_embed(ctx=ctx, Currency=True)
@@ -62,7 +60,6 @@ async def send(ctx):
 @tree.command(
     name="divcards_uniques",
     description="Show all unique divination cards which can be profitably flipped",
-    guild=guild,
 )
 async def send(ctx):
     await div_embed(ctx=ctx, Unique=True)
@@ -71,7 +68,6 @@ async def send(ctx):
 @tree.command(
     name="divcards_fragments",
     description="Show all fragment divination cards which can be profitably flipped",
-    guild=guild,
 )
 async def send(ctx):
     await div_embed(ctx=ctx, Fragment=True)
@@ -80,7 +76,6 @@ async def send(ctx):
 @tree.command(
     name="divcards_skillgems",
     description="Show all skillgem divination cards which can be profitably flipped",
-    guild=guild,
 )
 async def send(ctx):
     await div_embed(ctx=ctx, SkillGem=True)
@@ -89,7 +84,6 @@ async def send(ctx):
 @tree.command(
     name="price_changes",
     description="Show all items which prices have changed more than 30%",
-    guild=guild,
 )
 async def send(ctx):
     await price_change_embed(ctx=ctx)
@@ -98,21 +92,20 @@ async def send(ctx):
 @tree.command(
     name="predict_prices",
     description="Try to predict prices based on previous league data",
-    guild=guild,
 )
 async def send(ctx, item_name: str):
     await prediction_embed(ctx=ctx, item_name=item_name)
 
 
 @tree.command(
-    name="help", description="What does this bot do? How do i use it?", guild=guild
+    name="help", description="What does this bot do? How do i use it?"
 )
 async def send(ctx):
     await help_embed(ctx=ctx)
 
 
 @tree.command(
-    name="refresh_database", description="Refresh poe.ninja data", guild=guild
+    name="refresh_database", description="Refresh poe.ninja data"
 )
 async def send(ctx):
 
@@ -128,7 +121,7 @@ async def send(ctx):
 
 @client.event
 async def on_ready():
-    await tree.sync(guild=discord.Object(id=server_id))
+    await tree.sync()
     print(f"We have logged in as {client.user}")
 
 

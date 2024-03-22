@@ -7,6 +7,9 @@ if ! command -v python3 &> /dev/null; then
     sudo apt-get install python3 -y
 fi
 
+mkdir logs
+sudo apt-get install screen -y
+
 # Check if Pip is installed
 if ! command -v pip3 &> /dev/null; then
     echo "Pip is not installed. Installing Pip..."
@@ -17,10 +20,6 @@ fi
 echo "Installing Python dependencies..."
 pip3 install -r requirements.txt
 
-# Run cronjob.py
-echo "Running cronjob.py..."
-sudo python3 cronjob.py &
-
-# Run discord_bot.py in a separate Python instance
-echo "Running discord_bot.py in a separate Python instance..."
-sudo python3 discord_bot.py &
+screen -S initial_create_database python3 database/initial_create_database.py
+screen -S cronjob python3 cronjob.py
+screen -S discord_bot python3 discord_bot/discord_bot.py

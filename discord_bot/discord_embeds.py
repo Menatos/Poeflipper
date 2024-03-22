@@ -1,3 +1,7 @@
+import sys
+from os import path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
 import discord
 from discord import Embed
 
@@ -7,7 +11,7 @@ from helpers import last_run as lr
 
 max_string_length = 2000
 version = version
-last_run = lr.get_last_run_time_stamp().strftime("%d.%m.%y %H:%M:%S")
+last_run = lr.get_last_run_time_stamp()
 
 base_embed = {
     "title": "base_embed title",

@@ -1,3 +1,7 @@
+import sys
+from os import path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
 import json
 import re
 import sqlite3
@@ -5,7 +9,7 @@ import sqlite3
 # Import PyPika for building SQL queries
 from pypika import Query, Table, Parameter
 
-import helpers.last_run as lr
+from helpers import last_run as lr
 # Import custom modules
 from index import send_price_history_request, leagues, send_request
 from database import poe_types

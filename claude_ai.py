@@ -3,6 +3,7 @@ from os.path import dirname, join
 
 import anthropic
 from dotenv import load_dotenv
+
 from helpers import log_output as log
 
 env_path = join(dirname(__file__), ".env")

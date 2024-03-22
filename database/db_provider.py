@@ -5,10 +5,10 @@ import sqlite3
 # Import PyPika for building SQL queries
 from pypika import Query, Table, Parameter
 
-# Import custom modules
-import index
-from database import poe_types
 import helpers.last_run as lr
+# Import custom modules
+from index import send_price_history_request, leagues, send_request
+from database import poe_types
 
 # Connect to the SQLite database
 con = sqlite3.connect("../poeflipper.db")
@@ -27,7 +27,7 @@ misc_table_specs = poe_types.misc_table_specs
 item_list_table = Table(ItemList)
 price_history_table = Table(PriceHistory)
 
-leagues = index.leagues
+leagues = leagues
 
 # Check if a field is present in a given table specification
 def is_field_present(table_spec, table_name, field_name):
@@ -189,14 +189,14 @@ def refresh_db_values():
         if table_name.startswith("Uniques"):
             for unique_type in unique_types:
                 response = json.loads(
-                    index.send_request(unique_types[unique_type], unique_type)
+                    send_request(unique_types[unique_type], unique_type)
                 )
                 insert_into_db(
                     response, table_spec, table_name, current_table, item_list_table, unique_type
                 )
         else:
             response = json.loads(
-                index.send_request(
+                send_request(
                     item_types[table_name],
                     table_name,
                 )
@@ -247,7 +247,7 @@ def insert_price_history(response="", league=leagues[0]):
 
         print(item_history[item_table], league, item_type, item_id)
 
-        price_history = index.send_price_history_request(item_history[item_table], league, item_type, item_id)
+        price_history = send_price_history_request(item_history[item_table], league, item_type, item_id)
 
         if price_history:
             if league == leagues[0]:

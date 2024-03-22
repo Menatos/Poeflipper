@@ -1,5 +1,7 @@
 import time
+
 import schedule
+
 from database import db_provider
 
 # Schedule the job to run every 60 minutes

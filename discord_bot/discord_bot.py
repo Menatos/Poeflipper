@@ -1,11 +1,12 @@
-import discord
-import os
 import logging.handlers
-from dotenv import load_dotenv
+import os
 from os.path import join, dirname
-from discord import app_commands
 
-import discord_embeds
+import discord
+from discord import app_commands
+from dotenv import load_dotenv
+
+from discord_embeds import prediction_embed, refresh_embed, help_embed, price_change_embed, div_embed
 from database.db_provider import create_db_tables, refresh_db_values
 from helpers import last_run as lr
 
@@ -51,7 +52,7 @@ tree = app_commands.CommandTree(client)
     guild=guild,
 )
 async def send(ctx):
-    await discord_embeds.div_embed(ctx=ctx, Currency=True)
+    await div_embed(ctx=ctx, Currency=True)
 
 
 @tree.command(
@@ -60,7 +61,7 @@ async def send(ctx):
     guild=guild,
 )
 async def send(ctx):
-    await discord_embeds.div_embed(ctx=ctx, Unique=True)
+    await div_embed(ctx=ctx, Unique=True)
 
 
 @tree.command(
@@ -69,7 +70,7 @@ async def send(ctx):
     guild=guild,
 )
 async def send(ctx):
-    await discord_embeds.div_embed(ctx=ctx, Fragment=True)
+    await div_embed(ctx=ctx, Fragment=True)
 
 
 @tree.command(
@@ -78,7 +79,7 @@ async def send(ctx):
     guild=guild,
 )
 async def send(ctx):
-    await discord_embeds.div_embed(ctx=ctx, SkillGem=True)
+    await div_embed(ctx=ctx, SkillGem=True)
 
 
 @tree.command(
@@ -87,7 +88,7 @@ async def send(ctx):
     guild=guild,
 )
 async def send(ctx):
-    await discord_embeds.price_change_embed(ctx=ctx)
+    await price_change_embed(ctx=ctx)
 
 
 @tree.command(
@@ -96,14 +97,14 @@ async def send(ctx):
     guild=guild,
 )
 async def send(ctx, item_name: str):
-    await discord_embeds.prediction_embed(ctx=ctx, item_name=item_name)
+    await prediction_embed(ctx=ctx, item_name=item_name)
 
 
 @tree.command(
     name="help", description="What does this bot do? How do i use it?", guild=guild
 )
 async def send(ctx):
-    await discord_embeds.help_embed(ctx=ctx)
+    await help_embed(ctx=ctx)
 
 
 @tree.command(
@@ -112,7 +113,7 @@ async def send(ctx):
 async def send(ctx):
 
     try:
-        await discord_embeds.refresh_embed(ctx)
+        await refresh_embed(ctx)
         create_db_tables()
         refresh_db_values()
     except:

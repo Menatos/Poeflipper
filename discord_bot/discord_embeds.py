@@ -1,14 +1,12 @@
-import random
-
 import discord
 from discord import Embed
 
-import index
+from index import current_league_day, leagues, version
 from helpers import calculations
 from helpers import last_run as lr
 
 max_string_length = 2000
-version = index.version
+version = version
 last_run = lr.get_last_run_time_stamp().strftime("%d.%m.%y %H:%M:%S")
 
 base_embed = {
@@ -171,7 +169,7 @@ def generate_prediction_embeds(data):
             embed = Embed.from_dict(embed)
 
             embed.add_field(name="",
-                            value=f'\n```Vorhersage für den {values["prediction_day"]}. Tag von {index.leagues[0]}. Aktueller Tag: {index.current_league_day}```',
+                            value=f'\n```Vorhersage für den {values["prediction_day"]}. Tag von {leagues[0]}. Aktueller Tag: {current_league_day}```',
                             inline=False
                             )
 
@@ -188,7 +186,7 @@ def generate_prediction_embeds(data):
         embed = Embed.from_dict(embed)
 
         embed.add_field(name="",
-                        value=f'\n```Vorhersage für den {values["prediction_day"]}. Tag von {index.leagues[0]}. Aktueller Tag: {index.current_league_day}```',
+                        value=f'\n```Vorhersage für den {values["prediction_day"]}. Tag von {leagues[0]}. Aktueller Tag: {current_league_day}```',
                         inline=False
                         )
 

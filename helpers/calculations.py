@@ -1,8 +1,8 @@
 import json
 import sqlite3
-from pprint import pprint
 
 from pypika import Query, Table, Parameter
+
 from database import poe_types
 from database.db_provider import refresh_price_history
 from index import leagues

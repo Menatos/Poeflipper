@@ -19,9 +19,9 @@ pip3 install -r requirements.txt
 
 # Run cronjob.py
 echo "Running cronjob.py..."
-python3 cronjob.py &
+sudo python3 cronjob.py &
 
 # Run discord_bot.py in a separate Python instance
 echo "Running discord_bot.py in a separate Python instance..."
 cd discord_bot
-python3 discord_bot.py &
+sudo python3 discord_bot.py &

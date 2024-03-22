@@ -91,6 +91,15 @@ async def send(ctx):
 
 
 @tree.command(
+    name="predict_prices",
+    description="Try to predict prices based on previous league data",
+    guild=guild,
+)
+async def send(ctx, item_name: str):
+    await discord_embeds.prediction_embed(ctx=ctx, item_name=item_name)
+
+
+@tree.command(
     name="help", description="What does this bot do? How do i use it?", guild=guild
 )
 async def send(ctx):

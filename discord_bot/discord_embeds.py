@@ -137,6 +137,70 @@ def generate_price_change_embeds(data):
     return embeds
 
 
+
+
+def generate_prediction_embeds(data):
+    embeds = []
+    key = "Preisvorhersage"
+    description_string = ""
+
+    for values in data:
+        if values["percentage_difference"] >= 200:
+            values_string = f'> {values["name"]} > {values["old_value"]}c > {values["new_value"]}c > __***{values["percentage_difference"]}***__%\n'
+        elif values["percentage_difference"] >= 100:
+            values_string = f'> {values["name"]} > {values["old_value"]}c > {values["new_value"]}c > **{values["percentage_difference"]}**%\n'
+        elif values["percentage_difference"] >= 50:
+            values_string = f'> {values["name"]} > {values["old_value"]}c > {values["new_value"]}c > __{values["percentage_difference"]}__%\n'
+        elif values["percentage_difference"] <= -50:
+            values_string = f'> ~~{values["name"]} > {values["old_value"]}c > {values["new_value"]}c > {values["percentage_difference"]}~~%\n'
+        else:
+            values_string = f'> {values["name"]} > {values["old_value"]}c > {values["new_value"]}c > {values["percentage_difference"]}%\n'
+
+        description_string += values_string
+
+    if len(description_string) >= 4096:
+        limited_strings = split_string_longer_than_limit(
+            description_string, 4096
+        )
+
+        for limited_description in limited_strings:
+            embed = base_embed
+            embed["title"] = key
+            embed["description"] = limited_description
+
+            embed = Embed.from_dict(embed)
+
+            embed.add_field(name="",
+                            value=f'\n```Vorhersage für den {values["prediction_day"]}. Tag von {index.leagues[0]}. Aktueller Tag: {index.current_league_day}```',
+                            inline=False
+                            )
+
+            embed.add_field(name="Änderung >= 200%", value="__***Beispiel***__")
+            embed.add_field(name="Änderung >= 100%", value="**Beispiel**")
+            embed.add_field(name="Änderung >= 50%", value="__Beispiel__")
+
+            embeds.append(embed)
+    else:
+        embed = base_embed
+        embed["title"] = key
+        embed["description"] = description_string
+
+        embed = Embed.from_dict(embed)
+
+        embed.add_field(name="",
+                        value=f'\n```Vorhersage für den {values["prediction_day"]}. Tag von {index.leagues[0]}. Aktueller Tag: {index.current_league_day}```',
+                        inline=False
+                        )
+
+        embed.add_field(name="Änderung >= 200%", value="__***Beispiel***__")
+        embed.add_field(name="Änderung >= 100%", value="**Beispiel**")
+        embed.add_field(name="Änderung >= 50%", value="__Beispiel__")
+
+        embeds.append(embed)
+
+    return embeds
+
+
 def calculate_embeds_length(embeds):
     total_length = 0
     for embed in embeds:
@@ -162,8 +226,10 @@ async def send_followup(embeds, ctx):
         await ctx.followup.send(embed=embed)
 
 
-async def limit_embed_size(ctx, embeds):
+async def limit_embed_size(ctx, embeds, followup=False):
     total_length = calculate_embeds_length(embeds)
+    if followup:
+        await send_followup(embeds, ctx)
     if total_length <= 5999 and len(embeds) <= 10:
         # If total length is smaller than or equal to 5999, execute the function directly
         await send_response(embeds, ctx)
@@ -203,6 +269,19 @@ async def price_change_embed(ctx):
     await limit_embed_size(ctx, embeds)
 
 
+async def prediction_embed(ctx, item_name):
+
+    await ctx.response.defer()
+
+    prediction_data = calculations.predict_future_prices(item_name)
+
+    embeds = generate_prediction_embeds(prediction_data)
+
+    await limit_embed_size(ctx, embeds, followup=True)
+
+
+
+
 async def refresh_embed(ctx):
     embed = base_embed
     embed["title"] = "Datenbank wird aktualisiert"
@@ -226,6 +305,7 @@ async def help_embed(ctx):
         ("/divcards_fragments", "Der Wert der divinationcard rewards wird mit den Kosten verglichen."),
         ("/divcards_skillgems","Der Wert der divinationcard reward wird mit den Kosten verglichen. Gemlevel, Korruption und Qualität werden berücksichtigt."),
         ("/price_changes","Für jede Itemkategorie werden die Preisänderungen der letzten 7 Tage angezeigt, wenn sie größer als 30% sind und das Item mehr als 10 Chaos kostet. Besonders starke Veränderungen in beide Richtungen werden markiert."),
+        ("/predict_prices", "Für die angegebenen Items wird eine Preisvorhersage anhand der Preise der letzten und aktuellen Liga gemacht. Es wird der Preis des Items der letzten Liga + 7 Tage als Basiswert genommen und mit dem aktuellen Preis verglichen. Beispiel: /predict_prices doctor"),
         ("/refresh_database","Lädt die Datenbank mit neuen Daten. Standardmäßig geschieht dies automatisch alle 30 Minuten.")
     ]
 

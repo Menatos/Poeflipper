@@ -11,7 +11,6 @@ from index import leagues
 con = sqlite3.connect("../poeflipper.db")
 db = con.cursor()
 
-
 # This method serves as a calculation method to determine the value between the cost of the Divination cards needed
 # and the cost of the reward
 def evaluate_costs(cards, price_offset, min_profit, max_profit, card_type=""):
@@ -227,36 +226,76 @@ def calculate_price_change(price_change=30):
 
     return price_changes
 
-def predict_future_price(item_name):
-    print("Predicting future prices")
+def predict_future_prices(item_name):
+    current_league_day = 85
 
     item_name = f"%{item_name}%"
 
     refresh_price_history(item_name, leagues[0])
 
     price_history_table = Table("PriceHistory")
+    item_list_table = Table("ItemList")
 
     q = (
         Query.from_(price_history_table)
         .select('*')
+        .join(item_list_table)
+        .on(price_history_table.id == item_list_table.id)
         .where(price_history_table.name.like(Parameter('?')))
+        .where(item_list_table.table_name != "BaseType")
+        .groupby(price_history_table.name)
     )
 
     response = db.execute(str(q), (item_name,)).fetchall()
 
+    return_values = []
+
     for item in response:
+        return_item = {}
+
         item_id = item[0]
         item_name = item[1]
         if item[2]:
             old_league_prices = json.loads(item[2].replace("'", '"'))
+            if type(old_league_prices) is dict:
+                old_league_prices = old_league_prices.get("receiveCurrencyGraphData", old_league_prices)
+            old_league_length = len(old_league_prices)
         else:
             old_league_prices = None
+            old_league_length = 0
         if item[3]:
             new_league_prices = json.loads(item[3].replace("'", '"'))
+            if type(new_league_prices) is dict:
+                new_league_prices = new_league_prices.get("receiveCurrencyGraphData", new_league_prices)
         else:
             new_league_prices = None
-        print(f"{item_name} - {item_id} - {old_league_prices} - {new_league_prices}")
+        prediction_day = current_league_day + 7
 
+        if prediction_day >= old_league_length:
+            print("No prediction possible, end of league reached or no Data available")
+        else:
+            old_value = old_league_prices[prediction_day]['value']
+            new_value = new_league_prices[current_league_day]['value']
+            percentage_difference = round((old_value / new_value) * 100 - 100, 1)
+
+            return_item["name"] = item_name
+            return_item["old_value"] = round(old_value, 1)
+            return_item["new_value"] = round(new_value, 1)
+            return_item["percentage_difference"] = round(percentage_difference, 1)
+            return_item["prediction_day"] = prediction_day
+
+            return_values.append(return_item)
+
+    if len(return_values) == 0:
+        return_values = [{
+            "name": "No Data found",
+            "old_value": 0,
+            "new_value": 0,
+            "percentage_difference": 0,
+            "prediction_day": 0
+        }]
+
+    return return_values
 
 
 # Run the main function
@@ -267,5 +306,3 @@ def predict_future_price(item_name):
 # 10 kennen
 # hintergrundgeschichte
 # wortlaut kurzversion
-
-predict_future_price("chaos")

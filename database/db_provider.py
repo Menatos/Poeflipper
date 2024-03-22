@@ -160,7 +160,12 @@ def insert_into_db(response, table_spec, table_name, current_table, item_list_ta
         # Execute the queries
         db.execute(str(q))
         db.execute(str(q_index))
-        db.execute(str(q_price))
+
+        item_in_price_history = db.execute(f"SELECT id FROM {price_history_table} WHERE id = {values['id']}").fetchone()
+
+        if not item_in_price_history:
+            db.execute(str(q_price))
+
         con.commit()
         print(
             f"{table_name} Itemname: {values['name']} ID: {values['id']} import complete"
@@ -203,18 +208,21 @@ def refresh_db_values():
 
 
 def insert_price_history(response="", league=leagues[0]):
+
+    ids = []
+
+    if response:
+        ids = [x[0] for x in response]
+
     q = (
         Query.from_(item_list_table)
         .left_join(price_history_table)
         .on(item_list_table.id == price_history_table.id)
         .select('*')
-        .where(item_list_table.table_name != "BaseType" and item_list_table.table_name != "SkillGem")
+        .where(item_list_table.table_name != "BaseType")
+        .where(item_list_table.id.isin(ids))
         .groupby(item_list_table.id)
     )
-
-    if response:
-        ids = [x[0] for x in response]
-        q = q.where(item_list_table.id.isin(ids))
 
     item_values = db.execute(str(q)).fetchall()
 
@@ -227,8 +235,8 @@ def insert_price_history(response="", league=leagues[0]):
             item_type = value[3]
         else:
             item_type = item_table
-        old_league_prices = value[5]
-        new_league_prices = value[6]
+        old_league_prices = value[6]
+        new_league_prices = value[7]
 
         if old_league_prices and league == leagues[1]:
             print(f"Skipping {item_name} as it already has old league prices")
@@ -256,12 +264,12 @@ def insert_price_history(response="", league=leagues[0]):
     lr.save_last_run_time_stamp(prefix="price_history")
     return
 
-def refresh_price_history(item_name="", league=leagues[1]):
-    print("Refreshing price history")
 
+def refresh_price_history(item_name="", league=leagues[1]):
     q = (
         Query.from_(item_list_table)
         .select('*')
+        .where(item_list_table.table_name != "BaseType")
     )
 
     if item_name:
@@ -274,7 +282,6 @@ def refresh_price_history(item_name="", league=leagues[1]):
         response = db.execute(str(q)).fetchall()
         insert_price_history(response, league)
 
-    print("Price history refreshed")
 
 def refresh_old_league_prices():
     refresh_price_history(league=leagues[1])
@@ -282,4 +289,4 @@ def refresh_old_league_prices():
 # Create database tables and refresh values
 # create_db_tables()
 # refresh_db_values()
-refresh_price_history(f"%chaos%", leagues[0])
+# refresh_price_history()

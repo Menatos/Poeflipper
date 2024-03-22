@@ -7,9 +7,8 @@ import requests
 from database import poe_types
 
 league_start = date(2024, 3, 29)
-current_league_day = date.today() - league_start
+current_league_day = (date.today() - league_start).days
 version = "1.0"
-
 
 item_types = poe_types.item_types
 reward_Types = poe_types.reward_types

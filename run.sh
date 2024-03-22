@@ -24,4 +24,4 @@ sudo python3 cronjob.py &
 # Run discord_bot.py in a separate Python instance
 echo "Running discord_bot.py in a separate Python instance..."
 cd discord_bot
-sudo python3 discord_bot.py &
+sudo python3 discord/discord_bot.py &

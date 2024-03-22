@@ -20,6 +20,6 @@ fi
 echo "Installing Python dependencies..."
 pip3 install -r requirements.txt
 
-screen -S initial_create_database python3 database/initial_create_database.py
-screen -S cronjob python3 cronjob.py
-screen -S discord_bot python3 discord_bot/discord_bot.py
+screen -dm initial_create_database python3 database/initial_create_database.py
+screen -dm cronjob python3 cronjob.py
+screen -dm discord_bot python3 discord_bot/discord_bot.py

@@ -23,24 +23,24 @@ item_types = {
     "Memory": "itemoverview",
 }
 
-price_history_types = [
-    "Currency",
-    "Fragment",
-    "Oil",
-    "Incubator",
-    "Scarab",
-    "Fossil",
-    "Resonator",
-    "Essence",
-    "DivinationCard",
-    "SkillGem",
-    "Uniques",
-    "BaseType",
-    "Artifact",
-    "DeliriumOrb",
-    "Invitation",
-    "Memory",
-]
+item_history = {
+    "Currency": "currencyhistory",
+    "Fragment": "currencyhistory",
+    "Oil": "itemhistory",
+    "Incubator": "itemhistory",
+    "Scarab": "itemhistory",
+    "Fossil": "itemhistory",
+    "Resonator": "itemhistory",
+    "Essence": "itemhistory",
+    "DivinationCard": "itemhistory",
+    "SkillGem": "itemhistory",
+    "BaseType": "itemhistory",
+    "Artifact": "itemhistory",
+    "Uniques": "itemhistory",
+    "DeliriumOrb": "itemhistory",
+    "Invitation": "itemhistory",
+    "Memory": "itemhistory",
+}
 
 reward_types = [
     "currencyitem",
@@ -64,7 +64,7 @@ table_specs = [
     {
         "name": "BaseType",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "levelRequired", "type": "INTEGER"},
@@ -79,7 +79,9 @@ table_specs = [
     {
         "name": "Currency",
         "fields": [
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
+            {"name": "icon", "type": ""},
             {"name": "chaosEquivalent", "type": "NUMERIC"},
             {"name": "receiveSparkLine", "type": "NUMERIC"},
             {"name": "paySparkLine", "type": "NUMERIC"},
@@ -88,7 +90,7 @@ table_specs = [
     {
         "name": "DivinationCard",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -108,7 +110,7 @@ table_specs = [
     {
         "name": "Essence",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -120,7 +122,7 @@ table_specs = [
     {
         "name": "Fossil",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -131,7 +133,9 @@ table_specs = [
     {
         "name": "Fragment",
         "fields": [
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
+            {"name": "icon", "type": "TEXT"},
             {"name": "chaosEquivalent", "type": "NUMERIC"},
             {"name": "receiveSparkLine", "type": "NUMERIC"},
             {"name": "paySparkLine", "type": "NUMERIC"},
@@ -140,7 +144,7 @@ table_specs = [
     {
         "name": "Incubator",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -151,7 +155,7 @@ table_specs = [
     {
         "name": "Oil",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -162,7 +166,7 @@ table_specs = [
     {
         "name": "Resonator",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -173,7 +177,7 @@ table_specs = [
     {
         "name": "Scarab",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -184,7 +188,7 @@ table_specs = [
     {
         "name": "SkillGem",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -198,7 +202,7 @@ table_specs = [
     {
         "name": "Uniques",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "levelRequired", "type": "INTEGER"},
@@ -215,7 +219,7 @@ table_specs = [
     {
         "name": "Artifact",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -226,7 +230,7 @@ table_specs = [
     {
         "name": "DeliriumOrb",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -237,7 +241,7 @@ table_specs = [
     {
         "name": "Invitation",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -248,7 +252,7 @@ table_specs = [
     {
         "name": "Memory",
         "fields": [
-            {"name": "id", "type": "INTEGER"},
+            {"name": "id", "type": "INTEGER", "primary_key": "PRIMARY KEY"},
             {"name": "name", "type": ""},
             {"name": "icon", "type": ""},
             {"name": "chaosValue", "type": "NUMERIC"},
@@ -272,6 +276,7 @@ misc_table_specs = [
         "name": "PriceHistory",
         "fields": [
             {"name": "id", "type": "INTEGER"},
+            {"name": "name", "type": "TEXT"},
             {"name": "old_league_prices", "type": "TEXT"},
             {"name": "new_league_prices", "type": "TEXT"},
         ],

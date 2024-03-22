@@ -14,6 +14,7 @@ from discord_embeds import prediction_embed, refresh_embed, help_embed, price_ch
 from database.db_provider import create_db_tables, refresh_db_values
 from helpers import last_run as lr
 
+
 # Variables
 server_id = 696033204179697795
 timestamp = lr.get_last_run_time_stamp()
@@ -23,13 +24,19 @@ env_path = join(dirname(__file__), "../.env")
 load_dotenv(env_path)
 
 # DISCORD LOGGING HANDLER
-os.makedirs("logs", exist_ok=True)
 logger = logging.getLogger("discord")
 logger.setLevel(logging.DEBUG)
 logging.getLogger("discord.http").setLevel(logging.INFO)
 
+if os.environ.get("ENVIRONMENT") == "development":
+    log_path = "../logs/discord.log"
+    os.makedirs("../logs", exist_ok=True)
+else:
+    log_path = "logs/discord.log"
+    os.makedirs("logs", exist_ok=True)
+
 handler = logging.handlers.RotatingFileHandler(
-    filename="logs/discord.log",
+    filename=log_path,
     encoding="utf-8",
     maxBytes=32 * 1024 * 1024,  # 32 MiB
     backupCount=5,  # Rotate through 5 files

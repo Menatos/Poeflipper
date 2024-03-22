@@ -13,6 +13,9 @@ client = anthropic.Anthropic(
     api_key=os.environ.get("ANTHROPIC_API_KEY"),
 )
 
+log_path = "logs/prompts.log"
+
+
 # models
 # claude-3-opus-20240229	claude-3-sonnet-20240229	claude-3-haiku-20240307
 
@@ -42,4 +45,4 @@ message_data = {
     "type": message.type,
     "usage": str(message.usage),
 }
-log.log_json(message_data, "logs/prompts.log")
+log.log_json(message_data, log_path)

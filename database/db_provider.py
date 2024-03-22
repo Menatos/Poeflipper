@@ -1,5 +1,10 @@
+import os
 import sys
 from os import path
+from os.path import join, dirname
+
+from dotenv import load_dotenv
+
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import json
@@ -14,8 +19,16 @@ from helpers import last_run as lr
 from index import send_price_history_request, leagues, send_request
 from database import poe_types
 
-# Connect to the SQLite database
-con = sqlite3.connect("poeflipper.db")
+env_path = join(dirname(__file__), ".env")
+load_dotenv(env_path)
+
+if os.environ.get("ENVIRONMENT") == "development":
+    db_path = "../poeflipper.db"
+else:
+    db_path = "poeflipper.db"
+
+
+con = sqlite3.connect(db_path)
 db = con.cursor()
 ItemList = "ItemList"
 PriceHistory = "PriceHistory"

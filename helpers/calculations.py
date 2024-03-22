@@ -1,5 +1,10 @@
+import os
 import sys
 from os import path
+from os.path import join, dirname
+
+from dotenv import load_dotenv
+
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import json
@@ -9,10 +14,18 @@ from pypika import Query, Table, Parameter
 
 from database import poe_types
 from database.db_provider import refresh_price_history
-from index import leagues
+from index import leagues, current_league_day
+
+env_path = join(dirname(__file__), ".env")
+load_dotenv(env_path)
+
+if os.environ.get("ENVIRONMENT") == "development":
+    db_path = "../poeflipper.db"
+else:
+    db_path = "poeflipper.db"
 
 # Establish a connection to the SQLite database
-con = sqlite3.connect("poeflipper.db")
+con = sqlite3.connect(db_path)
 db = con.cursor()
 
 # This method serves as a calculation method to determine the value between the cost of the Divination cards needed
@@ -231,8 +244,6 @@ def calculate_price_change(price_change=30):
     return price_changes
 
 def predict_future_prices(item_name):
-    current_league_day = 85
-
     item_name = f"%{item_name}%"
 
     refresh_price_history(item_name, leagues[0])

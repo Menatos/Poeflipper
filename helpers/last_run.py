@@ -1,6 +1,6 @@
 import datetime
 import os
-from os.path import join, dirname
+from os.path import join
 
 from dotenv import load_dotenv
 
@@ -14,17 +14,25 @@ if os.environ.get("ENVIRONMENT") == "production":
 else:
     log_path = "../logs/last_run.log"
 
-def get_last_run_time_stamp():
-    # Try loading the datetime of the last run from the log file
+
+def get_last_refresh_time_stamp():
+    last_refresh_time = None
+
     try:
         with open(log_path, mode="r") as file:
             lines = file.readlines()
-            if lines:
-                return datetime.datetime.strptime(str(lines[-1].rsplit(" ", 1)[0]).strip(), fmt)
-            else:
-                return datetime.datetime.now().strftime(fmt)
+            for line in reversed(lines):
+                if "refresh_db_values" in line:
+                    date_string = " ".join(line.split()[:2])  # Extract date and time parts
+                    last_refresh_time = datetime.datetime.strptime(date_string, "%d.%m.%y %H:%M:%S")
+                    break
+
+        if last_refresh_time is None:
+            return datetime.datetime.now().strftime(fmt)
+        else:
+            return last_refresh_time.strftime(fmt)
+
     except FileNotFoundError:
-        # Return with current time-stamp if last_run.log file is not present
         return datetime.datetime.now().strftime(fmt)
 
 

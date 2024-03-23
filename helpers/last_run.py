@@ -4,7 +4,7 @@ from os.path import join, dirname
 
 from dotenv import load_dotenv
 
-env_path = join(dirname(__file__), ".env")
+env_path = join(os.path.abspath(os.path.join(os.getcwd())), ".env")
 load_dotenv(env_path)
 
 fmt = "%d.%m.%y %H:%M:%S"

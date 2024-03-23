@@ -19,7 +19,7 @@ from helpers import last_run as lr
 from index import send_price_history_request, leagues, send_request
 from database import poe_types
 
-env_path = join(dirname(__file__), ".env")
+env_path = join(os.path.abspath(os.path.join(os.getcwd())), ".env")
 load_dotenv(env_path)
 
 if os.environ.get("ENVIRONMENT") == "production":

@@ -20,7 +20,7 @@ server_id = 696033204179697795
 timestamp = lr.get_last_run_time_stamp()
 
 # ENV
-env_path = join(dirname(__file__), "../.env")
+env_path = join(os.path.abspath(os.path.join(os.getcwd())), ".env")
 load_dotenv(env_path)
 
 # DISCORD LOGGING HANDLER

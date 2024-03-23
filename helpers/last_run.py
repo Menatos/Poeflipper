@@ -15,7 +15,7 @@ else:
     log_path = "../logs/last_run.log"
 
 
-def get_last_refresh_time_stamp():
+def get_last_run_time_stamp():
     last_refresh_time = None
 
     try:

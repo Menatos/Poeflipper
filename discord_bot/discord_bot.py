@@ -21,6 +21,8 @@ timestamp = lr.get_last_run_time_stamp()
 
 # ENV
 env_path = join(os.path.abspath(os.path.join(os.getcwd())), ".env")
+# Für lokales development muss dieser Pfad benutzt werden, vor commit bitte wieder umstellen
+# env_path = join(dirname(__file__), "../.env")
 load_dotenv(env_path)
 
 # DISCORD LOGGING HANDLER
@@ -34,6 +36,9 @@ if os.environ.get("ENVIRONMENT") == "production":
 else:
     log_path = "../logs/discord.log"
     os.makedirs("../logs", exist_ok=True)
+
+print(os.environ.get("ENVIRONMENT"))
+print(env_path)
 
 handler = logging.handlers.RotatingFileHandler(
     filename=log_path,
@@ -128,9 +133,8 @@ async def send(ctx):
 
 @client.event
 async def on_ready():
+    await tree.clear_commands()
     await tree.sync()
     print(f"We have logged in as {client.user}")
 
-
-discord_token = os.environ.get("DISCORD_BOT_TOKEN")
-client.run(discord_token, log_handler=handler)
+client.run(os.environ.get("DISCORD_BOT_TOKEN"), log_handler=handler)

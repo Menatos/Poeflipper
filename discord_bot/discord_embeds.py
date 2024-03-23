@@ -18,10 +18,6 @@ base_embed = {
     "description": "base_embed description",
     "url": "https://poe.ninja/",
     "color": int(discord.Color.blue()),
-    "footer": {
-        "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n"
-                f"Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
-    },
     "thumbnail": {
         "url": "https://upload.wikimedia.org/wikipedia/en/0/08/Path_of_Exile_Logo.png?20171206230851"
     },
@@ -62,6 +58,11 @@ def process_chunks(
             embed = base_embed
             embed["title"] = title
             embed["description"] = current_chunk[:-1]
+            embed["footer"] = {
+                "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
+            }
+
+
 
             embed = Embed.from_dict(embed)
 
@@ -75,6 +76,9 @@ def process_chunks(
         embed = base_embed
         embed["title"] = title
         embed["description"] = current_chunk[:-1]
+        embed["footer"] = {
+            "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
+        }
 
         embed = Embed.from_dict(embed)
 
@@ -114,6 +118,9 @@ def generate_price_change_embeds(data):
                     embed = base_embed
                     embed["title"] = key
                     embed["description"] = limited_description
+                    embed["footer"] = {
+                        "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
+                    }
 
                     embed = Embed.from_dict(embed)
 
@@ -126,6 +133,9 @@ def generate_price_change_embeds(data):
                 embed = base_embed
                 embed["title"] = key
                 embed["description"] = description_string
+                embed["footer"] = {
+                    "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
+                }
 
                 embed = Embed.from_dict(embed)
 
@@ -168,6 +178,9 @@ def generate_prediction_embeds(data):
             embed = base_embed
             embed["title"] = key
             embed["description"] = limited_description
+            embed["footer"] = {
+                "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
+            }
 
             embed = Embed.from_dict(embed)
 
@@ -185,6 +198,9 @@ def generate_prediction_embeds(data):
         embed = base_embed
         embed["title"] = key
         embed["description"] = description_string
+        embed["footer"] = {
+            "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
+        }
 
         embed = Embed.from_dict(embed)
 
@@ -287,6 +303,9 @@ async def refresh_embed(ctx):
     embed = base_embed
     embed["title"] = "Datenbank wird aktualisiert"
     embed["description"] = "Refreshing poe.ninja data... please wait"
+    embed["footer"] = {
+        "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
+    }
 
     embed = Embed.from_dict(embed)
 
@@ -297,6 +316,9 @@ async def help_embed(ctx):
     embed = base_embed
     embed["title"] = "Was kann Poeflipper?"
     embed["description"] = ("Es werden grundsätzlich Items ausgefiltert, bei welchen nur wenige Exemplare auf dem Markt sind. Folgende Funktionen sind aktuell verfügbar:")
+    embed["footer"] = {
+        "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
+    }
 
     embed = Embed.from_dict(embed)
 

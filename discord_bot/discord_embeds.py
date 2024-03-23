@@ -11,7 +11,6 @@ from helpers import last_run as lr
 
 max_string_length = 2000
 version = version
-last_run = lr.get_last_run_time_stamp()
 
 base_embed = {
     "title": "base_embed title",
@@ -21,7 +20,7 @@ base_embed = {
     "color": int(discord.Color.blue()),
     "footer": {
         "text": f"Alle Werte werden anhand der aktuellen poe.ninja Preise berechnet.\n"
-        f"Letzte Aktualisierung der Daten: {last_run}. Poeflipper v{version}"
+                f"Letzte Aktualisierung der Daten: {lr.get_last_run_time_stamp()}. Poeflipper v{version}"
     },
     "thumbnail": {
         "url": "https://upload.wikimedia.org/wikipedia/en/0/08/Path_of_Exile_Logo.png?20171206230851"

@@ -4,7 +4,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import logging.handlers
 import os
-from os.path import join, dirname
+from os.path import join
 
 import discord
 from discord import app_commands
@@ -12,12 +12,9 @@ from dotenv import load_dotenv
 
 from discord_embeds import prediction_embed, refresh_embed, help_embed, price_change_embed, div_embed
 from database.db_provider import create_db_tables, refresh_db_values
-from helpers import last_run as lr
-
 
 # Variables
-server_id = 696033204179697795
-timestamp = lr.get_last_run_time_stamp()
+# server_id = 696033204179697795
 
 # ENV
 env_path = join(os.path.abspath(os.path.join(os.getcwd())), ".env")

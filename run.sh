@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # Check if Python is installed
 if ! command -v python3 &> /dev/null; then
     echo "Python is not installed. Installing Python..."

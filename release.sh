@@ -2,7 +2,7 @@
 
 set -e
 
-RELEASE_BRANCH='release-1.0_3.24'
+RELEASE_BRANCH='Release-1.0_3.24'
 
 echo "Stopping all running python processes"
 pkill -9 -f "python"

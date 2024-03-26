@@ -10,7 +10,7 @@ git clone https://github.com/Menatos/Poeflipper.git
 
 cd home/menatos/projects/Poeflipper
 
-git checkout release-1.0_3.24
+git checkout Release-1.0_3.24
 
 add .env with DISCORD_BOT_TOKEN to project folder
 

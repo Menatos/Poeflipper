@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 RELEASE_BRANCH='Release-1.0_3.24'
 
 echo "Stopping all running python processes"
